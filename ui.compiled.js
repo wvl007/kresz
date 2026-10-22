@@ -132,7 +132,11 @@ var ga = null;
 
 	var App = React.createClass({displayName: 'App',
 		componentDidMount: function() {
-			$(React.findDOMNode(this)).find('.button-collapse').sideNav();
+			var $el = $(React.findDOMNode(this));
+			$el.find('.button-collapse').sideNav();
+			$el.find('#nav-mobile a').on('click', function() {
+				$('.button-collapse').sideNav('hide');
+			});
 		},
 		render: function() {
 			return (
@@ -149,7 +153,7 @@ var ga = null;
 								React.createElement("li", null, React.createElement("a", {href: "#info"}, "Infó")), 
 								React.createElement("li", null, React.createElement("a", {href: "#statistics"}, "Statisztika"))
 							), 
-							React.createElement("a", {href: "#", 'data-activates': "nav-mobile", className: "button-collapse"}, React.createElement("i", {className: "mdi-navigation-menu"}))
+							React.createElement("a", {href: "#", 'data-activates': "nav-mobile", className: "button-collapse"}, React.createElement("i", {className: "material-icons"}, "menu"))
 						)
 					), 
 
