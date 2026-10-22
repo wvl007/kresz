@@ -1,0 +1,31 @@
+{
+  "name": "KRESZ Teszt & Gyakorló",
+  "short_name": "KRESZ Teszt",
+  "description": "Gyakorolj a KRESZ vizsgára okosan, offline is! Valós vizsgatesztek, 3 pontos képes kérdések, vizsganapló.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#00897b",
+  "theme_color": "#00897b",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

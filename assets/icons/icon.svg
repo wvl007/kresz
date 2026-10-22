@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00897b"/>
+      <stop offset="100%" stop-color="#004d40"/>
+    </linearGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded rectangle for adaptive/maskable support -->
+  <rect width="512" height="512" rx="110" fill="url(#tealGrad)"/>
+
+  <!-- Inner circle -->
+  <circle cx="256" cy="230" r="140" fill="none" stroke="#ffffff" stroke-width="14" opacity="0.95" filter="url(#dropShadow)"/>
+
+  <!-- Steering wheel / Navigation hub -->
+  <!-- Center horn hub -->
+  <circle cx="256" cy="230" r="42" fill="#ffffff"/>
+  <circle cx="256" cy="230" r="28" fill="#00897b"/>
+
+  <!-- Spokes -->
+  <!-- Left spoke -->
+  <path d="M 120 230 L 214 230" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+  <!-- Right spoke -->
+  <path d="M 298 230 L 392 230" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+  <!-- Bottom spoke -->
+  <path d="M 256 272 L 256 366" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+
+  <!-- Road markings in bottom spoke -->
+  <line x1="256" y1="290" x2="256" y2="350" stroke="#00897b" stroke-width="6" stroke-dasharray="10 8"/>
+
+  <!-- Text badge at bottom -->
+  <rect x="96" y="405" width="320" height="64" rx="32" fill="#ffffff" filter="url(#dropShadow)"/>
+  <text x="256" y="449" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="34" font-weight="900" fill="#00695c" text-anchor="middle" letter-spacing="4">KRESZ</text>
+</svg>
