@@ -159,6 +159,7 @@ nav .brand-logo {
 }
 
 /* Kérdés kártya alsó sáv (Footer) */
+.card .card-action.question-footer,
 .question-footer {
     position: relative !important;
     display: flex !important;
@@ -166,7 +167,7 @@ nav .brand-logo {
     justify-content: flex-start !important;
     flex-wrap: wrap !important;
     gap: 10px 16px !important;
-    padding: 12px 64px 12px 18px !important; /* Fix 64px jobb margó a csillag gombnak */
+    padding: 12px 64px 12px 18px !important; /* Fix 64px védett jobb margó a csillag gombnak */
     background: #fafbfc;
     border-top: 1px solid #edf2f7;
     margin: 0 !important;
@@ -181,8 +182,13 @@ nav .brand-logo {
     flex: 0 1 auto !important;
 }
 
+.question-footer > .col.question-mark-col,
 .question-footer > .col:last-child {
     position: static !important;
+    width: 0 !important;
+    flex: 0 0 0px !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 .question-score {
@@ -757,17 +763,39 @@ ol li {
     }
 
     /* Alsó footer elemek elrendezése mobilon */
+    .card .card-action.question-footer,
     .question-footer {
         position: relative !important;
+        display: flex !important;
         flex-direction: row !important;
+        flex-wrap: wrap !important;
         font-size: 13px !important;
-        padding: 10px 58px 10px 14px !important; /* 58px jobb oldali hely a fix csillag gombnak mobilon */
+        padding: 10px 64px 10px 14px !important; /* 64px védett jobb zóna a csillagnak! */
+        gap: 6px 14px !important;
+        box-sizing: border-box !important;
+        align-items: center !important;
+    }
+
+    .question-footer > .col:first-child {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        line-height: 1.35 !important;
+        margin-bottom: 2px !important;
     }
 
     .question-footer > .col {
         width: auto !important;
         float: none !important;
         flex: 0 1 auto !important;
+    }
+
+    .question-footer > .col.question-mark-col,
+    .question-footer > .col:last-child {
+        position: static !important;
+        width: 0 !important;
+        flex: 0 0 0px !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
     /* Gombok és navigáció mobilon */
