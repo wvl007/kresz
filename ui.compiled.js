@@ -146,12 +146,14 @@ var ga = null;
 							React.createElement("ul", {className: "right hide-on-med-and-down"}, 
 								React.createElement("li", null, React.createElement("a", {href: "#"}, "Új teszt")), 
 								React.createElement("li", null, React.createElement("a", {href: "#info"}, "Infó")), 
-								React.createElement("li", null, React.createElement("a", {href: "#statistics"}, "Statisztika"))
+								React.createElement("li", null, React.createElement("a", {href: "#statistics"}, "Statisztika")),
+								React.createElement("li", null, React.createElement("a", {onClick: function() { if (window.forceAppUpdate) window.forceAppUpdate(); }, title: "Alkalmazás azonnali frissítése"}, "Frissítés"))
 							), 
 							React.createElement("ul", {id: "nav-mobile", className: "side-nav"}, 
 								React.createElement("li", null, React.createElement("a", {href: "#"}, "Új teszt")), 
 								React.createElement("li", null, React.createElement("a", {href: "#info"}, "Infó")), 
-								React.createElement("li", null, React.createElement("a", {href: "#statistics"}, "Statisztika"))
+								React.createElement("li", null, React.createElement("a", {href: "#statistics"}, "Statisztika")),
+								React.createElement("li", null, React.createElement("a", {onClick: function() { if (window.forceAppUpdate) window.forceAppUpdate(); }}, "Alkalmazás frissítése"))
 							), 
 							React.createElement("a", {href: "#", 'data-activates': "nav-mobile", className: "button-collapse"}, 
 								React.createElement("svg", {className: "nav-mobile-burger", viewBox: "0 0 24 24", width: "24", height: "24"}, 
@@ -285,6 +287,18 @@ var ga = null;
 
 								React.createElement("li", null, "A KRESZ vizsgád napján, vagy előtte egy nappal érdemes átismételni a nehéz kérdéseket. Ehhez menj az új teszt menüpontra, majd alul állítsd be, hogy 1) csak megjölt/rontott kérdéseket adjon 2) az összes ilyen kérdést adja ki, ne csak témakörönként egyet. Így az összes ilyen kérdést átnézheted, és memorizálhatod a helyes választ.")
 							)
+						)
+					),
+
+					React.createElement("div", {className: "card"}, 
+						React.createElement("div", {className: "card-content"}, 
+							React.createElement("span", {className: "card-title grey-text text-darken-4"}, React.createElement("h4", null, "Alkalmazás frissítése")), 
+							React.createElement("p", null, "Ha az alkalmazást telepített appként (PWA) használod, vagy a legfrissebb kérdéseket és javításokat szeretnéd azonnal letölteni, kattints az alábbi gombra. A funkció kiüríti a helyi gyorsítótárat és betölti a legújabb verziót."), 
+							React.createElement("br", null), 
+							React.createElement("button", {
+								className: "waves-effect waves-light btn teal lighten-1", 
+								onClick: function() { if (window.forceAppUpdate) window.forceAppUpdate(); }
+							}, "Alkalmazás kényszerített frissítése most")
 						)
 					)
 				)
