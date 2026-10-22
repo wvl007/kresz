@@ -776,14 +776,19 @@ var ga = null;
 		},
 		updateTime: function(remainingTime) {
 			var sign = remainingTime >= 0 ? '' : '-';
-			calcRemainingTime = Math.abs(remainingTime);
+			var calcRemainingTime = Math.abs(remainingTime);
 			var seconds = calcRemainingTime % 60;
 			var minutes =  (calcRemainingTime - seconds) / 60;
 			var html = '<span class="question-time-val question-time-val-' + this.getTimeState(remainingTime) + '">' + sign + minutes + ':' + (seconds < 10 ? '0' : '') + seconds + '</span>';
-			$(React.findDOMNode(this.refs.time)).html(html);
+			if (this.refs && this.refs.time) {
+				$(React.findDOMNode(this.refs.time)).html(html);
+			}
 		},
 		startTimeUpdate: function() {
 			var self = this;
+			if (this.state && this.state.timeCallback) {
+				clearInterval(this.state.timeCallback);
+			}
 
 			this.setState({
 				startTime: (new Date).getTime(),
@@ -803,7 +808,9 @@ var ga = null;
 				if (this.props.question) {
 					this.props.question.elapsedTime = this.getElapsedTime();
 				}
-				this.setState({timeCallback: null});
+				if (this.isMounted()) {
+					this.setState({timeCallback: null});
+				}
 			}
 		},
 		componentWillMount: function() {

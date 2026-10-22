@@ -78,7 +78,7 @@ var model = (function() {
 		var correctAnswer = this.choices[this.correct];
 		this.choices = this.choices.slice(0);
 		shuffle(this.choices);
-		for (var i in this.choices) {
+		for (var i = 0; i < this.choices.length; i++) {
 			if (this.choices[i] === correctAnswer) {
 				this.correct = i;
 				break;
@@ -123,7 +123,8 @@ var model = (function() {
 		return this.questions.length;
 	};
 	Test.prototype.getPercentage = function() {
-		return Math.round(this.getTotalScore() / this.getMaxScore() * 100);
+		var max = this.getMaxScore();
+		return max > 0 ? Math.round(this.getTotalScore() / max * 100) : 0;
 	};
 	Test.prototype.isPassed = function() {
 		return this.getPercentage() >= this.category.masteryPercent;
@@ -135,15 +136,35 @@ var model = (function() {
 		return promise;
 	}
 
-		var history = window.localStorage.getItem('questionHistory');
-	history = history ? JSON.parse(history) : {};
-	function saveHistory() {
-		window.localStorage.setItem('questionHistory', JSON.stringify(history));
+	var history = {};
+	try {
+		var rawHistory = window.localStorage.getItem('questionHistory');
+		history = rawHistory ? JSON.parse(rawHistory) : {};
+	} catch (e) {
+		console.warn('Nem sikerult beolvasni a questionHistory-t:', e);
+		history = {};
 	}
-	var examHistory = window.localStorage.getItem('examHistory');
-	examHistory = examHistory ? JSON.parse(examHistory) : [];
+	function saveHistory() {
+		try {
+			window.localStorage.setItem('questionHistory', JSON.stringify(history));
+		} catch (e) {
+			console.warn('Nem sikerult menteni a questionHistory-t:', e);
+		}
+	}
+	var examHistory = [];
+	try {
+		var rawExam = window.localStorage.getItem('examHistory');
+		examHistory = rawExam ? JSON.parse(rawExam) : [];
+	} catch (e) {
+		console.warn('Nem sikerult beolvasni az examHistory-t:', e);
+		examHistory = [];
+	}
 	function saveExamHistory() {
-		window.localStorage.setItem('examHistory', JSON.stringify(examHistory));
+		try {
+			window.localStorage.setItem('examHistory', JSON.stringify(examHistory));
+		} catch (e) {
+			console.warn('Nem sikerult menteni az examHistory-t:', e);
+		}
 	}
 	function addQuestionToHistory(question) {
 		var entry = {
