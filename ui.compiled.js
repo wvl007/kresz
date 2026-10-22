@@ -893,12 +893,23 @@ var ga = null;
 				this.loadData();
 			}
 		},
+		handleLoadSample: function() {
+			if (model.loadSampleData) {
+				model.loadSampleData();
+				this.loadData();
+			}
+		},
 		render: function() {
 			var self = this;
 
 			// Exam log table
 			var examRows = this.state.exams.length === 0 ?
-				React.createElement("tr", null, React.createElement("td", {colSpan: 5, className: "grey-text center-align", style: {padding: "20px 10px", whiteSpace: "normal"}}, "Még nem fejeztél be teljes vizsgát. Tölts ki egy tesztet az eredmények megtekintéséhez!")) :
+				React.createElement("tr", null, 
+					React.createElement("td", {colSpan: 5, className: "grey-text center-align stats-empty-cell", style: {padding: "24px 12px", whiteSpace: "normal"}}, 
+						React.createElement("p", {style: {marginBottom: "14px", fontSize: "14.5px"}}, "Még nem fejeztél be teljes vizsgát. Tölts ki egy tesztet az eredmények megtekintéséhez!"), 
+						React.createElement("button", {className: "waves-effect waves-light btn teal lighten-1", onClick: this.handleLoadSample}, "Minta adatok betöltése (demó)")
+					)
+				) :
 				$.map(this.state.exams, function(ex, idx) {
 					var d = new Date(ex.date);
 					var dateStr = d.getFullYear() + '.' + 
@@ -907,15 +918,27 @@ var ga = null;
 						('0' + d.getHours()).slice(-2) + ':' + 
 						('0' + d.getMinutes()).slice(-2);
 					return (
-						React.createElement("tr", {key: idx}, 
-							React.createElement("td", null, dateStr), 
-							React.createElement("td", null, ex.categoryTitle), 
-							React.createElement("td", null, ex.score, " / ", ex.maxScore, " pont (", ex.percentage, "%)"), 
-							React.createElement("td", null, ex.correctAnswers, " / ", ex.questionCount, " kérdés"), 
-							React.createElement("td", null, 
-								ex.passed ? 
-									React.createElement("span", {className: "stats-badge badge green white-text"}, "Átment") :
-									React.createElement("span", {className: "stats-badge badge red white-text"}, "Nem sikerült")
+						React.createElement("tr", {key: idx, className: "stats-exam-row"}, 
+							React.createElement("td", {'data-label': "Dátum"}, 
+								React.createElement("span", {className: "stats-value stats-col-date"}, dateStr)
+							), 
+							React.createElement("td", {'data-label': "Kategória"}, 
+								React.createElement("span", {className: "stats-value stats-col-category"}, ex.categoryTitle)
+							), 
+							React.createElement("td", {'data-label': "Elért pontszám"}, 
+								React.createElement("span", {className: "stats-value stats-col-score"}, 
+									React.createElement("strong", null, ex.score, " / ", ex.maxScore, " pont"), " (", ex.percentage, "%)"
+								)
+							), 
+							React.createElement("td", {'data-label': "Helyes válaszok"}, 
+								React.createElement("span", {className: "stats-value stats-col-answers"}, ex.correctAnswers, " / ", ex.questionCount, " kérdés")
+							), 
+							React.createElement("td", {'data-label': "Eredmény"}, 
+								React.createElement("span", {className: "stats-value stats-col-result"}, 
+									ex.passed ? 
+										React.createElement("span", {className: "stats-badge badge green white-text"}, "Átment") :
+										React.createElement("span", {className: "stats-badge badge red white-text"}, "Nem sikerült")
+								)
 							)
 						)
 					);
@@ -944,13 +967,23 @@ var ga = null;
 			var categoriesHtml = $.map(this.state.data, function(row) {
 				var groupsHtml = $.map(row.groups, function(entry) {
 					return (
-						React.createElement("tr", {key: entry.group.id}, 
-							React.createElement("td", {className: "statistics-group-title"}, entry.group.title), 
-							React.createElement("td", null, entry.group.count, " kérdés, ", entry.group.score, " pont"), 
-							React.createElement("td", null, entry.group.questions.length), 
-							React.createElement("td", null, entry.answered), 
-							React.createElement("td", null, entry.right), 
-							React.createElement("td", null, entry.wrong)
+						React.createElement("tr", {key: entry.group.id, className: "stats-group-row"}, 
+							React.createElement("td", {'data-label': "Témakör", className: "statistics-group-title"}, entry.group.title), 
+							React.createElement("td", {'data-label': "Kérdések / pont"}, 
+								React.createElement("span", {className: "stats-value stats-col-info"}, entry.group.count, " kérdés, ", entry.group.score, " pont")
+							), 
+							React.createElement("td", {'data-label': "Összes kérdés"}, 
+								React.createElement("span", {className: "stats-value stats-col-total"}, entry.group.questions.length)
+							), 
+							React.createElement("td", {'data-label': "Megválaszolt"}, 
+								React.createElement("span", {className: "stats-value stats-col-answered"}, entry.answered)
+							), 
+							React.createElement("td", {'data-label': "Helyes"}, 
+								React.createElement("span", {className: "stats-value stats-col-right green-text text-darken-2"}, entry.right)
+							), 
+							React.createElement("td", {'data-label': "Rossz"}, 
+								React.createElement("span", {className: "stats-value stats-col-wrong red-text text-darken-2"}, entry.wrong)
+							)
 						)
 					);
 				});
@@ -985,7 +1018,10 @@ var ga = null;
 				React.createElement("div", null, 
 					React.createElement("div", {className: "stats-header-container"}, 
 						React.createElement("h3", {className: "stats-title"}, "Statisztika és Vizsganapló"), 
-						React.createElement("button", {className: "waves-effect waves-light btn red lighten-1 stats-reset-btn", onClick: this.handleReset, title: "Minden korábbi eredmény és statisztika törlése"}, "Statisztika törlése")
+						React.createElement("div", {className: "stats-header-actions"}, 
+							React.createElement("button", {className: "waves-effect waves-light btn teal lighten-1 stats-sample-btn", onClick: this.handleLoadSample, title: "Minta statisztikai adatok és vizsganapló betöltése teszteléshez"}, "Minta adatok"), 
+							React.createElement("button", {className: "waves-effect waves-light btn red lighten-1 stats-reset-btn", onClick: this.handleReset, title: "Minden korábbi eredmény és statisztika törlése"}, "Statisztika törlése")
+						)
 					), 
 					examHistoryCard, 
 					categoriesHtml

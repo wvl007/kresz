@@ -251,6 +251,13 @@ ol li {
     margin-bottom: 16px;
 }
 
+.stats-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .stats-title {
     margin: 0;
     font-size: 1.8rem;
@@ -268,10 +275,14 @@ ol li {
 
 .stats-table {
     width: 100%;
-    min-width: 520px;
     border-collapse: collapse;
     background: #ffffff;
     font-size: 13.5px;
+}
+@media (min-width: 601px) {
+    .stats-table {
+        min-width: 520px;
+    }
 }
 
 .stats-table th, 
@@ -300,13 +311,20 @@ ol li {
 }
 
 .stats-badge {
-    display: inline-block;
-    border-radius: 4px;
+    display: inline-block !important;
+    border-radius: 4px !important;
     float: none !important;
-    padding: 4px 10px !important;
-    font-size: 12px !important;
-    font-weight: 600;
-    line-height: 1.4;
+    padding: 3px 8px !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    min-width: 0 !important;
+}
+
+.stats-value {
+    display: inline-block;
+    text-align: inherit;
 }
 
 /* Materialize elavult responsive-table felülírása standard kártyás táblázatra */
@@ -445,10 +463,141 @@ ol li {
         width: 100%;
         line-height: 1.35;
     }
+    .stats-header-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        width: 100%;
+    }
+    .stats-sample-btn,
     .stats-reset-btn {
         width: 100% !important;
         display: block !important;
         margin: 0 !important;
+    }
+
+    /* Statisztika táblázatok átalakítása modern kártyás nézetté mobilon */
+    .stats-table-wrapper {
+        border: none !important;
+        overflow-x: visible !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+    }
+
+    .stats-table,
+    .stats-table tbody,
+    .stats-table tbody tr,
+    .stats-table td {
+        box-sizing: border-box !important;
+    }
+
+    .stats-table {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        display: block !important;
+        background: transparent !important;
+    }
+
+    .stats-table thead {
+        display: none !important;
+    }
+
+    .stats-table tbody {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .stats-table tbody tr {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 10px 12px !important;
+        margin-bottom: 12px !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    }
+
+    .stats-table td {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 8px 0 !important;
+        border-bottom: 1px dashed #edf2f7 !important;
+        font-size: 13px !important;
+        white-space: normal !important;
+        text-align: right !important;
+        gap: 10px;
+    }
+
+    .stats-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #64748b;
+        font-size: 12.5px;
+        text-align: left;
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+
+    .stats-value {
+        text-align: right !important;
+        display: inline-block !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        flex: 1 1 auto;
+    }
+
+    .stats-table td:last-child {
+        border-bottom: none !important;
+    }
+
+    .stats-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #64748b;
+        font-size: 12.5px;
+        text-align: left;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+
+    .stats-table td.statistics-group-title {
+        display: block !important;
+        font-weight: 700 !important;
+        font-size: 14.5px !important;
+        color: #1e293b !important;
+        text-align: left !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding-bottom: 8px !important;
+        margin-bottom: 4px !important;
+    }
+
+    .stats-table td.statistics-group-title::before {
+        display: none !important;
+    }
+
+    .stats-table td.stats-empty-cell {
+        display: block !important;
+        text-align: center !important;
+        padding: 20px 10px !important;
+        border-bottom: none !important;
+    }
+
+    .stats-table td.stats-empty-cell::before {
+        display: none !important;
+    }
+
+    .stats-table .stats-col-category {
+        font-weight: 600 !important;
+        color: #00897b !important;
     }
 
     /* Teszt vezérlő sáv mobilon */
