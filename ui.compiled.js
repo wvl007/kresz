@@ -623,6 +623,9 @@ var ga = null;
 			if (ga) { ga('send', 'event', 'test', 'next-question', this.props.category.id); }
 		},
 		finishTest: function() {
+			if (model.recordExamResult) {
+				model.recordExamResult(this.props.test);
+			}
 			this.props.showResultCallback();
 		},
 		render: function() {
@@ -856,25 +859,80 @@ var ga = null;
 	var Statistics = React.createClass({displayName: 'Statistics',
 		getInitialState: function() {
 			return {
-				data: []
+				data: [],
+				exams: (model.getExamHistory ? model.getExamHistory() : [])
 			};
 		},
-		componentDidMount: function() {
+		loadData: function() {
 			var self = this;
-
 			model.getStatistics().done(function(data) {
 				if (self.isMounted()) {
-					self.setState({data: data});
+					self.setState({
+						data: data,
+						exams: (model.getExamHistory ? model.getExamHistory() : [])
+					});
 				}
 			});
+		},
+		componentDidMount: function() {
+			this.loadData();
+		},
+		handleReset: function() {
+			if (window.confirm("Biztosan törölni szeretnéd az összes eddigi statisztikát és a vizsganaplót?\nA művelet végleges és nem vonható vissza.")) {
+				model.resetAllStatistics();
+				this.loadData();
+			}
 		},
 		render: function() {
 			var self = this;
 
+			// Exam log table
+			var examRows = this.state.exams.length === 0 ?
+				React.createElement("tr", null, React.createElement("td", {colSpan: 5, className: "grey-text center-align", style: {padding: "20px"}}, "Még nem fejeztél be teljes vizsgát. Tölts ki egy tesztet az eredmények megtekintéséhez!")) :
+				$.map(this.state.exams, function(ex, idx) {
+					var d = new Date(ex.date);
+					var dateStr = d.getFullYear() + '.' + 
+						('0' + (d.getMonth() + 1)).slice(-2) + '.' + 
+						('0' + d.getDate()).slice(-2) + ' ' + 
+						('0' + d.getHours()).slice(-2) + ':' + 
+						('0' + d.getMinutes()).slice(-2);
+					return (
+						React.createElement("tr", {key: idx}, 
+							React.createElement("td", null, dateStr), 
+							React.createElement("td", null, ex.categoryTitle), 
+							React.createElement("td", null, ex.score, " / ", ex.maxScore, " pont (", ex.percentage, "%)"), 
+							React.createElement("td", null, ex.correctAnswers, " / ", ex.questionCount, " kérdés"), 
+							React.createElement("td", null, 
+								ex.passed ? 
+									React.createElement("span", {className: "badge green white-text", style: {borderRadius: "4px", float: "none", padding: "4px 8px"}}, "Átment") :
+									React.createElement("span", {className: "badge red white-text", style: {borderRadius: "4px", float: "none", padding: "4px 8px"}}, "Nem sikerült")
+							)
+						)
+					);
+				});
+
+			var examHistoryCard = React.createElement("div", {className: "card"}, 
+				React.createElement("div", {className: "card-content"}, 
+					React.createElement("span", {className: "card-title grey-text text-darken-4"}, "Korábbi vizsgák naplója"), 
+					React.createElement("table", {className: "centered responsive-table"}, 
+						React.createElement("thead", null, 
+							React.createElement("tr", null, 
+								React.createElement("th", null, "Dátum"), 
+								React.createElement("th", null, "Kategória"), 
+								React.createElement("th", null, "Elért pontszám"), 
+								React.createElement("th", null, "Helyes válaszok"), 
+								React.createElement("th", null, "Eredmény")
+							)
+						), 
+						React.createElement("tbody", null, examRows)
+					)
+				)
+			);
+
 			var categoriesHtml = $.map(this.state.data, function(row) {
 				var groupsHtml = $.map(row.groups, function(entry) {
 					return (
-						React.createElement("tr", null, 
+						React.createElement("tr", {key: entry.group.id}, 
 							React.createElement("td", {className: "statistics-group-title"}, entry.group.title), 
 							React.createElement("td", null, entry.group.count, " kérdés, ", entry.group.score, " pont"), 
 							React.createElement("td", null, entry.group.questions.length), 
@@ -886,7 +944,7 @@ var ga = null;
 				});
 
 				return (
-					React.createElement("div", {className: "card"}, 
+					React.createElement("div", {className: "card", key: row.category.id}, 
 						React.createElement("div", {className: "card-content"}, 
 							React.createElement("span", {className: "card-title grey-text text-darken-4"}, row.category.title), 
 							React.createElement("table", {className: "centered responsive-table"}, 
@@ -911,7 +969,15 @@ var ga = null;
 
 			return (
 				React.createElement("div", null, 
-					React.createElement("h3", null, "Statisztika"), 
+					React.createElement("div", {className: "row", style: {marginTop: "20px", marginBottom: "10px"}}, 
+						React.createElement("div", {className: "col s8"}, 
+							React.createElement("h3", {style: {margin: "0"}}, "Statisztika és Vizsganapló")
+						), 
+						React.createElement("div", {className: "col s4 right-align"}, 
+							React.createElement("button", {className: "waves-effect waves-light btn red lighten-1", onClick: this.handleReset, title: "Minden korábbi eredmény és statisztika törlése"}, "Statisztika törlése")
+						)
+					), 
+					examHistoryCard, 
 					categoriesHtml
 				)
 			);

@@ -135,10 +135,15 @@ var model = (function() {
 		return promise;
 	}
 
-	var history = window.localStorage.getItem('questionHistory');
+		var history = window.localStorage.getItem('questionHistory');
 	history = history ? JSON.parse(history) : {};
 	function saveHistory() {
 		window.localStorage.setItem('questionHistory', JSON.stringify(history));
+	}
+	var examHistory = window.localStorage.getItem('examHistory');
+	examHistory = examHistory ? JSON.parse(examHistory) : [];
+	function saveExamHistory() {
+		window.localStorage.setItem('examHistory', JSON.stringify(examHistory));
 	}
 	function addQuestionToHistory(question) {
 		var entry = {
@@ -287,6 +292,34 @@ var model = (function() {
 			});
 
 			return new Test(questions, category);
+		},
+				recordExamResult: function(test) {
+			var entry = {
+				date: (new Date()).toISOString(),
+				categoryId: test.category.id,
+				categoryTitle: test.category.title,
+				score: test.getTotalScore(),
+				maxScore: test.getMaxScore(),
+				percentage: test.getPercentage(),
+				passed: test.isPassed(),
+				correctAnswers: test.getCorrectAnswers(),
+				questionCount: test.getQuestionCount()
+			};
+			examHistory.unshift(entry);
+			if (examHistory.length > 50) {
+				examHistory = examHistory.slice(0, 50);
+			}
+			saveExamHistory();
+			return entry;
+		},
+		getExamHistory: function() {
+			return examHistory;
+		},
+		resetAllStatistics: function() {
+			history = {};
+			examHistory = [];
+			saveHistory();
+			saveExamHistory();
 		},
 		getStatistics: function() {
 			var self = this;
