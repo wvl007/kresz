@@ -161,3 +161,18 @@ label {
 .statistics-group-title {
     text-align: left !important;
 }
+
+
+.badge-key {
+    display: inline-block;
+    background: #e0f2f1;
+    color: #00796b;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1;
+    padding: 3px 7px;
+    border-radius: 4px;
+    margin-right: 10px;
+    border: 1px solid #b2dfdb;
+    vertical-align: middle;
+}

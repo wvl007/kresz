@@ -521,12 +521,56 @@ var ga = null;
 		}
 	});
 
-	var Test = React.createClass({displayName: 'Test',
+		var Test = React.createClass({displayName: 'Test',
 		getInitialState: function() {
 			return {
 				qNum: 0,
 				startTime: new Date()
 			};
+		},
+		handleKeyDown: function(e) {
+			if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+				return;
+			}
+			var key = e.key;
+			var question = this.props.test.questions[this.state.qNum];
+
+			var choiceIndex = -1;
+			if (key === '1' || key === 'a' || key === 'A') choiceIndex = 0;
+			else if (key === '2' || key === 'b' || key === 'B') choiceIndex = 1;
+			else if (key === '3' || key === 'c' || key === 'C') choiceIndex = 2;
+			else if (key === '4' || key === 'd' || key === 'D') choiceIndex = 3;
+			else if (key === '5' || key === 'e' || key === 'E') choiceIndex = 4;
+
+			if (choiceIndex !== -1 && question && choiceIndex < question.choices.length) {
+				if (question.selected === null) {
+					question.selectChoice(choiceIndex);
+					this.forceUpdate();
+				}
+				e.preventDefault();
+				return;
+			}
+
+			if (key === ' ' || key === 'Enter') {
+				e.preventDefault();
+				this.nextQuestion();
+				return;
+			}
+
+			if (key === 's' || key === 'S' || key === '*') {
+				if (question) {
+					question.setMarked(!question.isMarked());
+					this.forceUpdate();
+				}
+				e.preventDefault();
+				return;
+			}
+		},
+		componentDidMount: function() {
+			window.addEventListener('keydown', this.handleKeyDown);
+		},
+		componentWillUnmount: function() {
+			window.removeEventListener('keydown', this.handleKeyDown);
 		},
 		nextQuestion: function() {
 			if (this.state.qNum + 1 >= this.props.test.getQuestionCount()) {
@@ -553,7 +597,7 @@ var ga = null;
 			var buttonsHtml = this.props.settings.onepage ?
 				React.createElement("a", {className: "waves-effect waves-light btn", title: "Mutasd az eredményt!", onClick: this.finishTest}, "Teszt befejezése") :
 				React.createElement("div", {className: "row"}, 
-					React.createElement("div", {className: "col m4 s12"}, React.createElement("a", {className: "waves-effect waves-light btn", onClick: this.nextQuestion}, "Következő kérdés")), 
+					React.createElement("div", {className: "col m4 s12"}, React.createElement("a", {className: "waves-effect waves-light btn", onClick: this.nextQuestion}, "Következő kérdés (Szóköz)")), 
 					React.createElement("div", {className: "test-progress-question-count col m4 s12"}, this.state.qNum + 1, " / ", this.props.test.getQuestionCount()), 
 					React.createElement("div", {className: "col m4 s12"}, React.createElement("a", {className: "waves-effect waves-teal btn-flat right", title: "Mutasd az eredményt!", onClick: this.finishTest}, "Teszt befejezése"))
 				)
@@ -708,7 +752,7 @@ var ga = null;
 				return (
 					React.createElement("p", {key: i, className: question.correct == i ? 'choice-right' : 'choice-wrong'}, 
 						React.createElement("input", {type: "radio", checked: question.selected === i, value: i, id: id, readOnly: selected, onChange: self.selectChoice}), 
-						React.createElement("label", {htmlFor: id}, choice)
+						React.createElement("label", {htmlFor: id}, React.createElement("span", {className: "badge-key"}, (i + 1)), choice)
 					)
 				);
 			});
