@@ -325,3 +325,120 @@ ul li a:hover {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* Kereső komponens stílusok */
+.search-container {
+    margin: 20px 0 25px 0;
+    background: var(--bg-card);
+    padding: 16px 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid #e2e8f0;
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    font-size: 1.15rem;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+#live-search-input {
+    width: 100%;
+    height: 48px;
+    padding: 10px 42px 10px 44px;
+    font-size: 16px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    background: #ffffff;
+    color: var(--text-main);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#live-search-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 137, 123, 0.15);
+}
+
+#search-clear-btn {
+    position: absolute;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    background: #e2e8f0;
+    color: #475569;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+}
+
+#search-clear-btn:hover {
+    background: #cbd5e1;
+    color: #0f172a;
+}
+
+.search-status {
+    margin-top: 12px;
+    font-size: 14px;
+    padding: 8px 14px;
+    border-radius: 6px;
+}
+
+.search-status-found {
+    background: #e0f2f1;
+    color: #004d40;
+    border-left: 4px solid var(--primary);
+}
+
+.search-status-empty {
+    background: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
+}
+
+/* Lebegő "Tetejére" gomb */
+.scroll-top-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--primary);
+    color: #ffffff;
+    border: none;
+    padding: 11px 18px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.scroll-top-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.scroll-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
