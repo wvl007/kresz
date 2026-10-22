@@ -328,6 +328,46 @@ var ga = null;
 			});
 			this.setState({groups: groups});
 		},
+				startThreePointTest: function() {
+			var groups = {};
+			var hasThreePoint = false;
+			$.each(this.state.category.groups, function(i, group) {
+				if (group.score === 3) {
+					groups[group.id] = true;
+					hasThreePoint = true;
+				} else {
+					groups[group.id] = false;
+				}
+			});
+			if (!hasThreePoint) {
+				alert('Ebben a kategóriában nincsenek 3 pontos kérdések.');
+				return;
+			}
+			var settings = {
+				filter: 'all',
+				prioritize: true,
+				count: 'original',
+				order: 'random',
+				showTime: true,
+				limitTime: false,
+				instantCorrection: true,
+				onepage: false,
+				showHistory: true
+			};
+			var test = model.generateTest(this.state.category, settings, groups);
+			this.setState({
+				test: test,
+				settings: settings,
+				showResult: false
+			});
+		},
+		selectOnlyThreePointGroups: function() {
+			var groups = {};
+			$.each(this.state.category.groups, function(i, group) {
+				groups[group.id] = (group.score === 3);
+			});
+			this.setState({groups: groups});
+		},
 		startRealTest: function() {
 			var groups = {};
 			$.each(this.state.category.groups, function(i, group) {
@@ -506,7 +546,8 @@ var ga = null;
 						), 
 						React.createElement("div", {className: "card-action"}, 
 							React.createElement("a", {onClick: this.resetGroupSelection.bind(this, true)}, React.createElement("i", {className: "material-icons tiny hide"}, "done_all"), " Összes kiválasztása"), 
-							React.createElement("a", {onClick: this.resetGroupSelection.bind(this, false)}, React.createElement("i", {className: "material-icons clear hide"}, "done_all"), " Kiválasztás törlése")
+							React.createElement("a", {onClick: this.resetGroupSelection.bind(this, false)}, React.createElement("i", {className: "material-icons clear hide"}, "done_all"), " Kiválasztás törlése"), 
+							React.createElement("a", {onClick: this.selectOnlyThreePointGroups}, React.createElement("i", {className: "material-icons tiny hide"}, "done_all"), " Csak a 3 pontosak kijelölése")
 						)
 					), 
 					React.createElement("div", {className: "card"}, 
