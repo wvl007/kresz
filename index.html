@@ -44,10 +44,8 @@
                 document.getElementById('content')
             );
 
-            // Kényszerített azonnali frissítés segédfüggvény (törli az összes cache-t és újratölt)
+            // Kényszerített frissítés a menüből vagy Infó oldalról
             window.forceAppUpdate = function() {
-                var btn = document.getElementById('pwa-update-btn');
-                if (btn) btn.textContent = 'Frissítés folyamatban...';
                 if ('caches' in window) {
                     caches.keys().then(function(names) {
                         return Promise.all(names.map(function(name) { return caches.delete(name); }));
@@ -69,59 +67,13 @@
                 }
             };
 
-            function showUpdateNotification() {
-                if (document.getElementById('pwa-update-banner')) return;
-                var banner = document.createElement('div');
-                banner.id = 'pwa-update-banner';
-                banner.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 999999; background: #1e293b; color: #ffffff; padding: 12px 18px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 12px; font-family: sans-serif; font-size: 14px;';
-                banner.innerHTML = '<span>🚀 Új verzió érhető el!</span>' +
-                    '<button id="pwa-update-btn" style="background: #00897b; border: none; color: #fff; padding: 6px 14px; border-radius: 5px; font-weight: 600; cursor: pointer;">Frissítés most</button>' +
-                    '<button id="pwa-update-close" style="background: transparent; border: none; color: #94a3b8; font-size: 16px; cursor: pointer; padding: 0 4px;">✕</button>';
-                document.body.appendChild(banner);
-
-                document.getElementById('pwa-update-btn').onclick = function() {
-                    window.forceAppUpdate();
-                };
-                document.getElementById('pwa-update-close').onclick = function() {
-                    banner.remove();
-                };
-            }
-
-            // Progressive Web App Service Worker regisztráció és automata frissítés
+            // Progressive Web App Service Worker regisztráció
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('sw.js?v=' + Date.now(), { updateViaCache: 'none' }).then(function(reg) {
-                        console.log('KRESZ PWA Service Worker aktív:', reg.scope);
-
-                        // Ha már várakozik egy új service worker a háttérben
-                        if (reg.waiting) {
-                            showUpdateNotification();
-                        }
-
-                        // Ha frissítés közben új service worker érkezik
-                        reg.addEventListener('updatefound', function() {
-                            var newWorker = reg.installing;
-                            if (!newWorker) return;
-                            newWorker.addEventListener('statechange', function() {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    showUpdateNotification();
-                                }
-                            });
-                        });
-
-                        // Azonnali frissítéskeresés indításkor
+                    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function(reg) {
                         reg.update();
                     }).catch(function(err) {
-                        console.log('KRESZ PWA Service Worker hiba:', err);
-                    });
-
-                    // Ha a háttérben aktiválódott az új service worker, automatikusan frissítjük a nézetet
-                    var refreshing = false;
-                    navigator.serviceWorker.addEventListener('controllerchange', function() {
-                        if (!refreshing) {
-                            refreshing = true;
-                            window.location.reload();
-                        }
+                        console.log('SW regisztrációs hiba:', err);
                     });
                 });
             }
