@@ -845,7 +845,7 @@ var ga = null;
 						), 
 						React.createElement("div", {className: 'col ' + (!this.props.settings.showHistory && !this.props.settings.showTime ? 's8' : 's4')}, 
 							React.createElement("a", {className: 'question-mark right btn-floating waves-effect waves-light teal ' + (question.isMarked() ? '' : 'lighten-3'), onClick: this.toggleMark, title: "Kérdés megjelölése későbbi előhívhatóság céljából"}, 
-								React.createElement("svg", {viewBox: "0 0 24 24", width: "20", height: "20", style: {verticalAlign: "middle", marginTop: "8px", fill: question.isMarked() ? "#ffd54f" : "#ffffff"}}, 
+								React.createElement("svg", {viewBox: "0 0 24 24", width: "20", height: "20", style: {fill: question.isMarked() ? "#ffd54f" : "#ffffff"}}, 
 									React.createElement("path", {d: "M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"})
 								)
 							)

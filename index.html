@@ -44,11 +44,13 @@
                 document.getElementById('content')
             );
 
-            // Progressive Web App Service Worker regisztráció
+            // Progressive Web App Service Worker regisztráció és automata frissítés
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
                     navigator.serviceWorker.register('sw.js').then(function(reg) {
                         console.log('KRESZ PWA Service Worker aktív:', reg.scope);
+                        // Frissítés keresése indításkor
+                        reg.update();
                     }).catch(function(err) {
                         console.log('KRESZ PWA Service Worker hiba:', err);
                     });

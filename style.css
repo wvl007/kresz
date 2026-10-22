@@ -193,8 +193,19 @@ nav .brand-logo {
     text-align: right;
 }
 
-.question-mark {
+.question-mark.btn-floating {
     margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    width: 38px !important;
+    height: 38px !important;
+}
+
+.question-mark.btn-floating svg {
+    margin: 0 !important;
+    display: block !important;
 }
 
 .question-time-val-warn {

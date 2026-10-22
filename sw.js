@@ -1,11 +1,11 @@
 /**
  * KRESZ Teszt & Gyakorló - Progressive Web App Service Worker
- * Offline működés és gyorstárazás GitHub Pages és helyi környezetben
+ * Network-First kódfrissítés, Cache-First offline média
  */
 
-var CACHE_NAME = 'kresz-pwa-v1';
+var CACHE_NAME = 'kresz-pwa-v2';
 
-var PRECACHE_URLS = [
+var CORE_ASSETS = [
     './',
     './index.html',
     './style.css',
@@ -22,31 +22,24 @@ var PRECACHE_URLS = [
     './assets/icons/icon.svg',
     './data/jsonp/categories.js',
     './data/jsonp/166852.js',
-    './data/jsonp/166856.js',
-    './data/jsonp/166866.js',
-    './data/jsonp/166868.js',
-    './data/jsonp/166870.js',
-    './data/jsonp/166878.js',
-    './data/jsonp/166880.js',
-    './data/jsonp/166886.js',
     './tests/test.css',
     './tests/search.js',
     './tests/test_b_alapismeretek.html'
 ];
 
-// Telepítés és előtárazás
+// Telepítéskor előtárazzuk a magot és azonnal átvesszük az irányítást
 self.addEventListener('install', function(event) {
     self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then(function(cache) {
-            return cache.addAll(PRECACHE_URLS).catch(function(err) {
-                console.warn('Precache hiba egy vagy több fájlnál:', err);
+            return cache.addAll(CORE_ASSETS).catch(function(err) {
+                console.warn('Precache figyelmeztetés:', err);
             });
         })
     );
 });
 
-// Aktiválás és korábbi gyorsítótárak törlése
+// Aktiváláskor a régi cache-eket azonnal kitöröljük
 self.addEventListener('activate', function(event) {
     event.waitUntil(
         caches.keys().then(function(cacheNames) {
@@ -63,35 +56,51 @@ self.addEventListener('activate', function(event) {
     );
 });
 
-// Hálózati kérések kiszolgálása: Cache-First dinamikus mentéssel
+// Intelligens kéréskezelés
 self.addEventListener('fetch', function(event) {
-    // Csak http/https GET kéréseket kezelünk
     if (event.request.method !== 'GET') return;
     var url = event.request.url;
     if (!url.startsWith('http')) return;
 
-    event.respondWith(
-        caches.match(event.request).then(function(cachedResponse) {
-            if (cachedResponse) {
-                return cachedResponse;
-            }
+    // Fő alkalmazáskód (HTML, CSS, JS, manifest): NETWORK-FIRST
+    // Így frissítés után azonnal a legújabb verzió jön le, offline pedig a mentett változat
+    var isCoreCode = url.endsWith('.html') || url.endsWith('.js') || url.endsWith('.css') || url.endsWith('manifest.json') || url.endsWith('/kresz/') || url.endsWith('/KRESZ-teszt/');
 
-            return fetch(event.request).then(function(networkResponse) {
-                if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-                    return networkResponse;
+    if (isCoreCode && !url.includes('data/asset/')) {
+        event.respondWith(
+            fetch(event.request).then(function(networkResponse) {
+                if (networkResponse && networkResponse.status === 200) {
+                    var clone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then(function(cache) {
+                        cache.put(event.request, clone);
+                    });
                 }
-
-                var responseToCache = networkResponse.clone();
-                caches.open(CACHE_NAME).then(function(cache) {
-                    cache.put(event.request, responseToCache);
-                });
-
                 return networkResponse;
             }).catch(function() {
-                // Ha offline van és nincs a gyorsítótárban, navigációnál adjuk vissza az index.html-t
-                if (event.request.mode === 'navigate') {
-                    return caches.match('./index.html');
+                return caches.match(event.request).then(function(cachedResponse) {
+                    if (cachedResponse) return cachedResponse;
+                    if (event.request.mode === 'navigate') {
+                        return caches.match('./index.html');
+                    }
+                });
+            })
+        );
+        return;
+    }
+
+    // Képek és egyéb statikus eszközök: CACHE-FIRST
+    event.respondWith(
+        caches.match(event.request).then(function(cachedResponse) {
+            if (cachedResponse) return cachedResponse;
+
+            return fetch(event.request).then(function(networkResponse) {
+                if (networkResponse && networkResponse.status === 200) {
+                    var clone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then(function(cache) {
+                        cache.put(event.request, clone);
+                    });
                 }
+                return networkResponse;
             });
         })
     );
