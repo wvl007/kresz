@@ -209,6 +209,135 @@ nav .brand-logo {
 }
 
 /* ========================================================
+   ÁLTALÁNOS ÉS KOMPONENS STÍLUSOK
+   ======================================================== */
+
+/* Info oldal lista és szövegek formázása */
+ol {
+    padding-left: 26px;
+}
+ol li {
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+/* Mobil navigáció hamburger ikon */
+.button-collapse {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    margin-left: 8px;
+    cursor: pointer;
+}
+.nav-mobile-burger {
+    display: inline-block;
+    vertical-align: middle;
+}
+@media only screen and (min-width: 993px) {
+    .button-collapse {
+        display: none !important;
+    }
+}
+
+/* Statisztika és vizsganapló oldal */
+.stats-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+    margin-bottom: 16px;
+}
+
+.stats-title {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.stats-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 12px 0 6px 0;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.stats-table {
+    width: 100%;
+    min-width: 520px;
+    border-collapse: collapse;
+    background: #ffffff;
+    font-size: 13.5px;
+}
+
+.stats-table th, 
+.stats-table td {
+    padding: 10px 14px;
+    line-height: 1.4;
+    border-bottom: 1px solid #edf2f7;
+    white-space: nowrap;
+}
+
+.stats-table th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    font-size: 12.5px;
+    text-align: center;
+}
+
+.stats-table td.statistics-group-title {
+    text-align: left !important;
+    font-weight: 500;
+}
+
+.stats-table tbody tr:hover td {
+    background-color: #f8fafc;
+}
+
+.stats-badge {
+    display: inline-block;
+    border-radius: 4px;
+    float: none !important;
+    padding: 4px 10px !important;
+    font-size: 12px !important;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* Materialize elavult responsive-table felülírása standard kártyás táblázatra */
+@media only screen and (max-width: 992px) {
+    table.responsive-table {
+        display: table !important;
+        width: 100% !important;
+    }
+    table.responsive-table thead {
+        display: table-header-group !important;
+        float: none !important;
+    }
+    table.responsive-table thead tr {
+        display: table-row !important;
+        padding: 0 !important;
+    }
+    table.responsive-table tbody {
+        display: table-row-group !important;
+        overflow-x: visible !important;
+        white-space: normal !important;
+    }
+    table.responsive-table tbody tr {
+        display: table-row !important;
+    }
+    table.responsive-table th, 
+    table.responsive-table td {
+        display: table-cell !important;
+    }
+}
+
+/* ========================================================
    MOBIL ÉS TABLET RESZPONZÍV SZABÁLYOK (<= 768px és <= 600px)
    ======================================================== */
 
@@ -251,7 +380,7 @@ nav .brand-logo {
     }
 
     h3 {
-        font-size: 1.45rem;
+        font-size: 1.35rem;
         margin: 14px 0 10px 0;
     }
 
@@ -302,22 +431,50 @@ nav .brand-logo {
         margin-bottom: 15px;
     }
 
-    /* Statisztika táblázatok görgethetősége */
-    table.responsive-table {
-        font-size: 13px;
+    /* Statisztika fejléc mobilon */
+    .stats-header-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin-top: 14px;
+        margin-bottom: 14px;
     }
-}
+    .stats-title {
+        font-size: 1.25rem;
+        text-align: center;
+        width: 100%;
+        line-height: 1.35;
+    }
+    .stats-reset-btn {
+        width: 100% !important;
+        display: block !important;
+        margin: 0 !important;
+    }
 
+    /* Teszt vezérlő sáv mobilon */
+    .test-controls-row {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+    .test-controls-row .col {
+        width: 100% !important;
+        float: none !important;
+        text-align: center !important;
+        padding: 0 !important;
+    }
+    .test-controls-row .btn-flat {
+        width: 100%;
+        text-align: center;
+        margin: 4px 0;
+        float: none !important;
+    }
+    .test-progress-question-count {
+        order: -1;
+        padding: 4px 0 !important;
+    }
 
-/* Info oldal lista és szövegek formázása */
-ol {
-    padding-left: 26px;
-}
-ol li {
-    margin-bottom: 12px;
-    line-height: 1.6;
-}
-@media (max-width: 600px) {
     ol {
         padding-left: 20px;
     }

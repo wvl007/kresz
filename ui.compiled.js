@@ -153,7 +153,11 @@ var ga = null;
 								React.createElement("li", null, React.createElement("a", {href: "#info"}, "Infó")), 
 								React.createElement("li", null, React.createElement("a", {href: "#statistics"}, "Statisztika"))
 							), 
-							React.createElement("a", {href: "#", 'data-activates': "nav-mobile", className: "button-collapse"}, React.createElement("i", {className: "material-icons"}, "menu"))
+							React.createElement("a", {href: "#", 'data-activates': "nav-mobile", className: "button-collapse"}, 
+								React.createElement("svg", {className: "nav-mobile-burger", viewBox: "0 0 24 24", width: "24", height: "24"}, 
+									React.createElement("path", {fill: "#ffffff", d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"})
+								)
+							)
 						)
 					), 
 
@@ -462,7 +466,7 @@ var ga = null;
 
 			var settings = this.state.settings;
 			var settingsHtml = React.createElement("div", null, 
-				React.createElement("div", {className: "row"}, 
+				React.createElement("div", {className: "row test-controls-row"}, 
 					React.createElement("div", {className: "col m6 s12"}, 
 						React.createElement("strong", null, "Kérdések szűrése"), 
 						React.createElement("p", null, 
@@ -644,7 +648,7 @@ var ga = null;
 
 			var buttonsHtml = this.props.settings.onepage ?
 				React.createElement("a", {className: "waves-effect waves-light btn", title: "Mutasd az eredményt!", onClick: this.finishTest}, "Teszt befejezése") :
-				React.createElement("div", {className: "row"}, 
+				React.createElement("div", {className: "row test-controls-row"}, 
 					React.createElement("div", {className: "col m4 s12"}, React.createElement("a", {className: "waves-effect waves-light btn", onClick: this.nextQuestion}, "Következő kérdés (Szóköz)")), 
 					React.createElement("div", {className: "test-progress-question-count col m4 s12"}, this.state.qNum + 1, " / ", this.props.test.getQuestionCount()), 
 					React.createElement("div", {className: "col m4 s12"}, React.createElement("a", {className: "waves-effect waves-teal btn-flat right", title: "Mutasd az eredményt!", onClick: this.finishTest}, "Teszt befejezése"))
@@ -685,7 +689,7 @@ var ga = null;
 						this.props.test.isPassed() ? React.createElement("span", {className: "green-text text-darken-3"}, "Átment") : React.createElement("span", {className: "red-text text-darken-3"}, "Nem sikerült")
 					)), 
 					questionsHtml, 
-					React.createElement("div", {className: "row"}, 
+					React.createElement("div", {className: "row test-controls-row"}, 
 						React.createElement("div", {className: "col m6 s12 center-align"}, React.createElement("a", {className: "waves-effect waves-light btn", onClick: this.startNew.bind(this, false)}, "Új teszt azonos beállításokkal")), 
 						React.createElement("div", {className: "col m6 s12 center-align"}, React.createElement("a", {className: "waves-effect waves-light btn", onClick: this.startNew.bind(this, true)}, "Új teszt más beállításokkal"))
 					)
@@ -841,7 +845,9 @@ var ga = null;
 						), 
 						React.createElement("div", {className: 'col ' + (!this.props.settings.showHistory && !this.props.settings.showTime ? 's8' : 's4')}, 
 							React.createElement("a", {className: 'question-mark right btn-floating waves-effect waves-light teal ' + (question.isMarked() ? '' : 'lighten-3'), onClick: this.toggleMark, title: "Kérdés megjelölése későbbi előhívhatóság céljából"}, 
-								React.createElement("i", {className: "material-icons small"}, "star")
+								React.createElement("svg", {viewBox: "0 0 24 24", width: "20", height: "20", style: {verticalAlign: "middle", marginTop: "8px", fill: question.isMarked() ? "#ffd54f" : "#ffffff"}}, 
+									React.createElement("path", {d: "M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"})
+								)
 							)
 						)
 					)
@@ -892,7 +898,7 @@ var ga = null;
 
 			// Exam log table
 			var examRows = this.state.exams.length === 0 ?
-				React.createElement("tr", null, React.createElement("td", {colSpan: 5, className: "grey-text center-align", style: {padding: "20px"}}, "Még nem fejeztél be teljes vizsgát. Tölts ki egy tesztet az eredmények megtekintéséhez!")) :
+				React.createElement("tr", null, React.createElement("td", {colSpan: 5, className: "grey-text center-align", style: {padding: "20px 10px", whiteSpace: "normal"}}, "Még nem fejeztél be teljes vizsgát. Tölts ki egy tesztet az eredmények megtekintéséhez!")) :
 				$.map(this.state.exams, function(ex, idx) {
 					var d = new Date(ex.date);
 					var dateStr = d.getFullYear() + '.' + 
@@ -908,8 +914,8 @@ var ga = null;
 							React.createElement("td", null, ex.correctAnswers, " / ", ex.questionCount, " kérdés"), 
 							React.createElement("td", null, 
 								ex.passed ? 
-									React.createElement("span", {className: "badge green white-text", style: {borderRadius: "4px", float: "none", padding: "4px 8px"}}, "Átment") :
-									React.createElement("span", {className: "badge red white-text", style: {borderRadius: "4px", float: "none", padding: "4px 8px"}}, "Nem sikerült")
+									React.createElement("span", {className: "stats-badge badge green white-text"}, "Átment") :
+									React.createElement("span", {className: "stats-badge badge red white-text"}, "Nem sikerült")
 							)
 						)
 					);
@@ -918,17 +924,19 @@ var ga = null;
 			var examHistoryCard = React.createElement("div", {className: "card"}, 
 				React.createElement("div", {className: "card-content"}, 
 					React.createElement("span", {className: "card-title grey-text text-darken-4"}, "Korábbi vizsgák naplója"), 
-					React.createElement("table", {className: "centered responsive-table"}, 
-						React.createElement("thead", null, 
-							React.createElement("tr", null, 
-								React.createElement("th", null, "Dátum"), 
-								React.createElement("th", null, "Kategória"), 
-								React.createElement("th", null, "Elért pontszám"), 
-								React.createElement("th", null, "Helyes válaszok"), 
-								React.createElement("th", null, "Eredmény")
-							)
-						), 
-						React.createElement("tbody", null, examRows)
+					React.createElement("div", {className: "stats-table-wrapper"}, 
+						React.createElement("table", {className: "centered stats-table"}, 
+							React.createElement("thead", null, 
+								React.createElement("tr", null, 
+									React.createElement("th", null, "Dátum"), 
+									React.createElement("th", null, "Kategória"), 
+									React.createElement("th", null, "Elért pontszám"), 
+									React.createElement("th", null, "Helyes válaszok"), 
+									React.createElement("th", null, "Eredmény")
+								)
+							), 
+							React.createElement("tbody", null, examRows)
+						)
 					)
 				)
 			);
@@ -951,19 +959,21 @@ var ga = null;
 					React.createElement("div", {className: "card", key: row.category.id}, 
 						React.createElement("div", {className: "card-content"}, 
 							React.createElement("span", {className: "card-title grey-text text-darken-4"}, row.category.title), 
-							React.createElement("table", {className: "centered responsive-table"}, 
-								React.createElement("thead", null, 
-									React.createElement("tr", null, 
-										React.createElement("th", null, "Témakör"), 
-										React.createElement("th", null), 
-										React.createElement("th", null, "Kérdések száma"), 
-										React.createElement("th", null, "Megválaszolt kérdések"), 
-										React.createElement("th", {title: "Legalább egyszer helyesen megválaszolt kérdések száma"}, "Helyes válaszok"), 
-										React.createElement("th", {title: "Legalább egyszer rosszul megválaszolt kérdések száma"}, "Rossz válaszok")
+							React.createElement("div", {className: "stats-table-wrapper"}, 
+								React.createElement("table", {className: "centered stats-table"}, 
+									React.createElement("thead", null, 
+										React.createElement("tr", null, 
+											React.createElement("th", null, "Témakör"), 
+											React.createElement("th", null, "Kérdések / pont"), 
+											React.createElement("th", null, "Összes kérdés"), 
+											React.createElement("th", null, "Megválaszolt"), 
+											React.createElement("th", {title: "Legalább egyszer helyesen megválaszolt kérdések száma"}, "Helyes"), 
+											React.createElement("th", {title: "Legalább egyszer rosszul megválaszolt kérdések száma"}, "Rossz")
+										)
+									), 
+									React.createElement("tbody", null, 
+										groupsHtml
 									)
-								), 
-								React.createElement("tbody", null, 
-									groupsHtml
 								)
 							)
 						)
@@ -973,13 +983,9 @@ var ga = null;
 
 			return (
 				React.createElement("div", null, 
-					React.createElement("div", {className: "row", style: {marginTop: "20px", marginBottom: "10px"}}, 
-						React.createElement("div", {className: "col s8"}, 
-							React.createElement("h3", {style: {margin: "0"}}, "Statisztika és Vizsganapló")
-						), 
-						React.createElement("div", {className: "col s4 right-align"}, 
-							React.createElement("button", {className: "waves-effect waves-light btn red lighten-1", onClick: this.handleReset, title: "Minden korábbi eredmény és statisztika törlése"}, "Statisztika törlése")
-						)
+					React.createElement("div", {className: "stats-header-container"}, 
+						React.createElement("h3", {className: "stats-title"}, "Statisztika és Vizsganapló"), 
+						React.createElement("button", {className: "waves-effect waves-light btn red lighten-1 stats-reset-btn", onClick: this.handleReset, title: "Minden korábbi eredmény és statisztika törlése"}, "Statisztika törlése")
 					), 
 					examHistoryCard, 
 					categoriesHtml
