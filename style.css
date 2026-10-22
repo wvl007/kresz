@@ -307,3 +307,26 @@ nav .brand-logo {
         font-size: 13px;
     }
 }
+
+
+/* Info oldal lista és szövegek formázása */
+ol {
+    padding-left: 26px;
+}
+ol li {
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+@media (max-width: 600px) {
+    ol {
+        padding-left: 20px;
+    }
+    ol li {
+        font-size: 14px;
+        margin-bottom: 14px;
+    }
+    .card .card-content p {
+        font-size: 14px;
+        line-height: 1.55;
+    }
+}
