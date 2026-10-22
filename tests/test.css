@@ -1,0 +1,327 @@
+/* Modern KRESZ Teszt & Kérdésbank Stílus */
+
+:root {
+    --primary: #00897b;
+    --primary-hover: #00796b;
+    --primary-light: #e0f2f1;
+    --bg-page: #f4f6f9;
+    --bg-card: #ffffff;
+    --text-main: #263238;
+    --text-muted: #607d8b;
+    --border-color: #cfd8dc;
+    --correct-bg: #e8f5e9;
+    --correct-border: #81c784;
+    --correct-text: #1b5e20;
+    --radius: 8px;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* Főcímek */
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 16px 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+h2 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #37474f;
+    margin: 36px 0 16px;
+    padding: 10px 16px;
+    background: #eceff1;
+    border-left: 5px solid var(--primary);
+    border-radius: 4px;
+}
+
+/* Vissza gomb */
+p a[href="../index.html"],
+p a[href="../"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: var(--primary);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+p a[href="../index.html"]:hover,
+p a[href="../"]:hover {
+    background-color: var(--primary-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* Témakör tartalomjegyzék (Index lista - Rácsos Kártyás Elrendezés) */
+#index {
+    list-style: none;
+    counter-reset: topic-counter;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 12px;
+    padding: 20px;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin: 20px 0 35px 0;
+}
+
+#index li {
+    counter-increment: topic-counter;
+    position: relative;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid var(--primary);
+    border-radius: 6px;
+    padding: 10px 14px 10px 46px;
+    font-size: 13.5px;
+    line-height: 1.4;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+#index li::before {
+    content: counter(topic-counter);
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 11px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#index li:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    border-left-color: var(--primary-hover);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    transform: translateY(-1px);
+}
+
+#index li a {
+    color: #1e293b;
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 2px;
+    transition: color 0.15s;
+}
+
+#index li a:hover {
+    color: var(--primary);
+}
+
+/* Kérdések gyűjtője */
+.questions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Egyedi kérdés kártya - modern Flexbox elrendezés a kép átfedésének megszüntetésére */
+.question {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+    border: 1px solid #e0e0e0;
+    border-left: 4px solid var(--primary);
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    transition: box-shadow 0.2s;
+}
+
+.question:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+/* Kérdés és válaszok blokk */
+.question dl {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+}
+
+/* Kérdés szöveg és azonosító */
+dt {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1a252c;
+    margin-bottom: 16px;
+    line-height: 1.5;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+}
+
+dt a {
+    color: #90a4ae;
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 0.82rem;
+    padding: 2px 6px;
+    background: #f1f3f5;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+dt a:hover {
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+/* Kép formázása - fix jobb oldal, nincs float */
+.exercise-image {
+    flex: 0 0 280px;
+    max-width: 280px;
+    margin: 0;
+    text-align: center;
+}
+
+.exercise-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    display: block;
+    margin: 0 auto;
+}
+
+/* Válaszlehetőségek */
+dd {
+    margin: 8px 0;
+    padding: 10px 16px 10px 40px;
+    border-radius: 6px;
+    background: #f8f9fa;
+    border: 1px solid #edf0f2;
+    color: #455a64;
+    position: relative;
+    line-height: 1.45;
+}
+
+/* Helytelen válasz jelölő (kör/pont) */
+dd:not(.correct)::before {
+    content: "○";
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #b0bec5;
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+/* Helyes válasz kiemelése */
+dd.correct {
+    background: var(--correct-bg);
+    border: 1px solid var(--correct-border);
+    color: var(--correct-text);
+    font-weight: 600;
+}
+
+dd.correct::before {
+    content: "✓";
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #2e7d32;
+    font-size: 1.25rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* tests/index.html lista nézet */
+ul {
+    list-style-type: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+}
+
+ul li a {
+    display: block;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-decoration: none;
+    border-left: 4px solid var(--primary);
+    transition: all 0.2s;
+}
+
+ul li a:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+    background: #fafbfc;
+}
+
+/* Reszponzív nézet mobilon vagy keskenyebb kijelzőn */
+@media (max-width: 820px) {
+    body {
+        padding: 16px 12px 60px;
+    }
+
+    .question {
+        flex-direction: column;
+    }
+    
+    .exercise-image {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 12px;
+    }
+
+    #index {
+        grid-template-columns: 1fr;
+    }
+
+    ul {
+        grid-template-columns: 1fr;
+    }
+}
