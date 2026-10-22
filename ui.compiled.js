@@ -146,14 +146,12 @@ var ga = null;
 							React.createElement("ul", {className: "right hide-on-med-and-down"}, 
 								React.createElement("li", null, React.createElement("a", {href: "#"}, "Új teszt")), 
 								React.createElement("li", null, React.createElement("a", {href: "#info"}, "Infó")), 
-								React.createElement("li", null, React.createElement("a", {href: "#statistics"}, "Statisztika")),
-								React.createElement("li", null, React.createElement("a", {onClick: function() { if (window.forceAppUpdate) window.forceAppUpdate(); }, title: "Alkalmazás azonnali frissítése"}, "Frissítés"))
+								React.createElement("li", null, React.createElement("a", {href: "#statistics"}, "Statisztika"))
 							), 
 							React.createElement("ul", {id: "nav-mobile", className: "side-nav"}, 
 								React.createElement("li", null, React.createElement("a", {href: "#"}, "Új teszt")), 
 								React.createElement("li", null, React.createElement("a", {href: "#info"}, "Infó")), 
-								React.createElement("li", null, React.createElement("a", {href: "#statistics"}, "Statisztika")),
-								React.createElement("li", null, React.createElement("a", {onClick: function() { if (window.forceAppUpdate) window.forceAppUpdate(); }}, "Alkalmazás frissítése"))
+								React.createElement("li", null, React.createElement("a", {href: "#statistics"}, "Statisztika"))
 							), 
 							React.createElement("a", {href: "#", 'data-activates': "nav-mobile", className: "button-collapse"}, 
 								React.createElement("svg", {className: "nav-mobile-burger", viewBox: "0 0 24 24", width: "24", height: "24"}, 
