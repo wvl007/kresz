@@ -363,6 +363,10 @@ var ga = null;
 				showHistory: true
 			};
 			var test = model.generateTest(this.state.category, settings, groups);
+			if (!test || test.getQuestionCount() === 0) {
+				alert('Ebben a kategóriában nem található 3 pontos kérdés.');
+				return;
+			}
 			this.setState({
 				test: test,
 				settings: settings,
@@ -393,6 +397,10 @@ var ga = null;
 				showHistory: false
 			};
 			var test = model.generateTest(this.state.category, settings, groups);
+			if (!test || test.getQuestionCount() === 0) {
+				alert('Nem sikerült kérdéseket generálni ehhez a teszthez.');
+				return;
+			}
 			this.setState({
 				test: test,
 				settings: settings,
@@ -401,6 +409,10 @@ var ga = null;
 		},
 		startTest: function() {
 			var test = model.generateTest(this.state.category, this.state.settings, this.state.groups);
+			if (!test || test.getQuestionCount() === 0) {
+				alert("A kiválasztott szűrőkkel és témakörökkel nem található kérdés!\n\nKérjük, ellenőrizd a beállításokat (pl. ne válassz 'Csak rontott kérdések' vagy 'Csak megjelöltek' szűrőt, ha még nincsenek rontott/megjelölt válaszaid), és jelölj be legalább egy témakört!");
+				return;
+			}
 			this.setState({
 				test: test,
 				showResult: false
@@ -448,7 +460,7 @@ var ga = null;
 			var groupsHtml = $.map(this.state.category.groups, function(group) {
 				var id = 'group-' + group.id;
 				return (
-					React.createElement("p", {key: group.id}, 
+					React.createElement("p", {key: group.id, className: "option-item"}, 
 						React.createElement("input", {
 							type: "checkbox",
 							id: id,
@@ -466,67 +478,66 @@ var ga = null;
 
 			var settings = this.state.settings;
 			var settingsHtml = React.createElement("div", null, 
-				React.createElement("div", {className: "row test-controls-row"}, 
+				React.createElement("div", {className: "row settings-row"}, 
 					React.createElement("div", {className: "col m6 s12"}, 
-						React.createElement("strong", null, "Kérdések szűrése"), 
-						React.createElement("p", null, 
+						React.createElement("strong", {className: "settings-section-title"}, "Kérdések szűrése"), 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {name: "filter", type: "radio", id: "filter-all", value: "all", checked: settings.filter == 'all', onChange: this.toggleSetting.bind(this, 'filter')}), 
 							React.createElement("label", {htmlFor: "filter-all"}, "Összes kérdés")
 						), 
-						React.createElement("p", null, 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {name: "filter", type: "radio", id: "filter-new", value: "new-only", checked: settings.filter == 'new-only', onChange: this.toggleSetting.bind(this, 'filter')}), 
 							React.createElement("label", {htmlFor: "filter-new"}, "Csak új kérdések")
 						), 
-						React.createElement("p", null, 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {name: "filter", type: "radio", id: "filter-missed", value: "missed-only", checked: settings.filter == 'missed-only', onChange: this.toggleSetting.bind(this, 'filter')}), 
 							React.createElement("label", {htmlFor: "filter-missed"}, "Csak rontott kérdések")
 						), 
-						React.createElement("p", null, 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {name: "filter", type: "radio", id: "filter-marked", value: "marked-only", checked: settings.filter == 'marked-only', onChange: this.toggleSetting.bind(this, 'filter')}), 
 							React.createElement("label", {htmlFor: "filter-marked"}, "Csak megjelölt kérdések")
 						), 
-						React.createElement("p", null, 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {name: "filter", type: "radio", id: "filter-missed-marked", value: "missed-marked", checked: settings.filter == 'missed-marked', onChange: this.toggleSetting.bind(this, 'filter')}), 
 							React.createElement("label", {htmlFor: "filter-missed-marked"}, "Rontott és megjelölt kérdések")
 						)
 					), 
 					React.createElement("div", {className: "col m6 s12"}, 
-						React.createElement("strong", null, "Kérdések száma"), 
-						React.createElement("p", null, 
+						React.createElement("strong", {className: "settings-section-title"}, "Kérdések száma"), 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {name: "count", type: "radio", id: "count-original", value: "original", checked: settings.count == 'original', onChange: this.toggleSetting.bind(this, 'count')}), 
 							React.createElement("label", {htmlFor: "count-original"}, "Eredeti vizsga szerinti")
 						), 
-						React.createElement("p", null, 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {name: "count", type: "radio", id: "count-fixed10", value: "fixed10", checked: settings.count == 'fixed10', onChange: this.toggleSetting.bind(this, 'count')}), 
 							React.createElement("label", {htmlFor: "count-fixed10"}, "Témakörönként 10 kérdés")
 						), 
-						React.createElement("p", null, 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {name: "count", type: "radio", id: "count-all", value: "all", checked: settings.count == 'all', onChange: this.toggleSetting.bind(this, 'count')}), 
 							React.createElement("label", {htmlFor: "count-all"}, "Összes kiválasztott kérdés")
 						), 
-						React.createElement("br", null), 
-						React.createElement("strong", null, "Egyéb beállítások"), 
-						React.createElement("p", null, 
+						React.createElement("strong", {className: "settings-section-title", style: {marginTop: "16px"}}, "Egyéb beállítások"), 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {type: "checkbox", id: "opt-prioritize", checked: settings.prioritize, onChange: this.toggleSetting.bind(this, 'prioritize')}), 
 							React.createElement("label", {htmlFor: "opt-prioritize"}, "Új és hibás kérdések előre sorolása")
 						), 
-						React.createElement("p", null, 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {type: "checkbox", id: "opt-instant", checked: settings.instantCorrection, onChange: this.toggleSetting.bind(this, 'instantCorrection')}), 
 							React.createElement("label", {htmlFor: "opt-instant"}, "Azonnali javítás és válaszmutatás")
 						), 
-						React.createElement("p", null, 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {type: "checkbox", id: "opt-showTime", checked: settings.showTime, onChange: this.toggleSetting.bind(this, 'showTime')}), 
 							React.createElement("label", {htmlFor: "opt-showTime"}, "Időmérés mutatása")
 						), 
-						React.createElement("p", null, 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {type: "checkbox", id: "opt-limitTime", checked: settings.limitTime, onChange: this.toggleSetting.bind(this, 'limitTime')}), 
 							React.createElement("label", {htmlFor: "opt-limitTime"}, "Időkorlát (60 mp / kérdés)")
 						), 
-						React.createElement("p", null, 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {type: "checkbox", id: "opt-showHistory", checked: settings.showHistory, onChange: this.toggleSetting.bind(this, 'showHistory')}), 
 							React.createElement("label", {htmlFor: "opt-showHistory"}, "Korábbi statisztika mutatása a kérdésnél")
 						), 
-						React.createElement("p", null, 
+						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {type: "checkbox", id: "opt-onepage", checked: settings.onepage, onChange: this.toggleSetting.bind(this, 'onepage')}), 
 							React.createElement("label", {htmlFor: "opt-onepage"}, "Összes kérdés egy oldalon")
 						)
@@ -582,7 +593,7 @@ var ga = null;
 				return;
 			}
 			var key = e.key;
-			var question = this.props.test.questions[this.state.qNum];
+			var question = (this.props.test && this.props.test.questions) ? this.props.test.questions[this.state.qNum] : null;
 
 			var choiceIndex = -1;
 			if (key === '1' || key === 'a' || key === 'A') choiceIndex = 0;
@@ -622,7 +633,7 @@ var ga = null;
 			window.removeEventListener('keydown', this.handleKeyDown);
 		},
 		nextQuestion: function() {
-			if (this.state.qNum + 1 >= this.props.test.getQuestionCount()) {
+			if (!this.props.test || this.state.qNum + 1 >= this.props.test.getQuestionCount()) {
 				return this.finishTest();
 			}
 
@@ -631,13 +642,24 @@ var ga = null;
 			if (ga) { ga('send', 'event', 'test', 'next-question', this.props.category.id); }
 		},
 		finishTest: function() {
-			if (model.recordExamResult) {
+			if (model.recordExamResult && this.props.test) {
 				model.recordExamResult(this.props.test);
 			}
 			this.props.showResultCallback();
 		},
 		render: function() {
 			var self = this;
+			if (!this.props.test || !this.props.test.questions || this.props.test.questions.length === 0) {
+				return (
+					React.createElement("div", {className: "card"},
+						React.createElement("div", {className: "card-content"},
+							React.createElement("p", {className: "flow-text"}, "Nincsenek megjeleníthető kérdések a megadott beállításokkal."),
+							React.createElement("br", null),
+							React.createElement("a", {className: "waves-effect waves-light btn", onClick: function() { history.back(); }}, "Vissza a beállításokhoz")
+						)
+					)
+				);
+			}
 			var question = this.props.test.questions[this.state.qNum];
 
 			var questionHtml = !this.props.settings.onepage ?
@@ -724,9 +746,11 @@ var ga = null;
 			this.forceUpdate();
 		},
 		getElapsedTime: function() {
+			if (!this.props.question) return 0;
 			return this.props.type == 'test' ? Math.round(((new Date).getTime() - this.state.startTime + this.props.question.elapsedTime) / 1000) : this.props.question.elapsedTime;
 		},
 		getRemainingTime: function() {
+			if (!this.props.question || !this.props.question.group || !this.props.question.group.category) return 0;
 			return this.props.question.group.category.exTimeLimit - this.getElapsedTime();
 		},
 		getTimeState: function(remainingTime) {
@@ -764,7 +788,9 @@ var ga = null;
 		stopTimeUpdate: function() {
 			if (this.state.timeCallback) {
 				clearInterval(this.state.timeCallback);
-				this.props.question.elapsedTime = this.getElapsedTime();
+				if (this.props.question) {
+					this.props.question.elapsedTime = this.getElapsedTime();
+				}
 				this.setState({timeCallback: null});
 			}
 		},
@@ -797,6 +823,9 @@ var ga = null;
 		render: function() {
 			var self = this;
 			var question = this.props.question;
+			if (!question) {
+				return React.createElement("div", null);
+			}
 
 			var selected = question.selected !== null;
 			var choicesHtml = $.map(question.choices, function(choice, i) {

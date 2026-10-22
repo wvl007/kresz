@@ -3,7 +3,7 @@
  * Network-First kódfrissítés, Cache-First offline média
  */
 
-var CACHE_NAME = 'kresz-pwa-v2';
+var CACHE_NAME = 'kresz-pwa-v3';
 
 var CORE_ASSETS = [
     './',
@@ -22,6 +22,13 @@ var CORE_ASSETS = [
     './assets/icons/icon.svg',
     './data/jsonp/categories.js',
     './data/jsonp/166852.js',
+    './data/jsonp/166856.js',
+    './data/jsonp/166866.js',
+    './data/jsonp/166868.js',
+    './data/jsonp/166870.js',
+    './data/jsonp/166878.js',
+    './data/jsonp/166880.js',
+    './data/jsonp/166886.js',
     './tests/test.css',
     './tests/search.js',
     './tests/test_b_alapismeretek.html'
