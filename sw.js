@@ -3,7 +3,7 @@
  * Network-First kódfrissítés, Cache-First offline média
  */
 
-var CACHE_NAME = 'kresz-pwa-v4';
+var CACHE_NAME = 'kresz-pwa-v5';
 
 var CORE_ASSETS = [
     './',

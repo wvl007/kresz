@@ -208,7 +208,7 @@ var ga = null;
 
 			var categoryTestsHtml = $.map(model.getCategories(), function (category) {
 				return (
-					React.createElement("a", {className: "collection-item", href: 'tests/' + category.id + '.html', key: category.id}, category.title)
+					React.createElement("a", {className: "collection-item", href: 'tests/' + category.id + '/index.html', key: category.id}, category.title)
 				);
 			});
 
@@ -845,7 +845,7 @@ var ga = null;
 			});
 
 			var questionLinkHtml = (this.props.type == 'result') ?
-				React.createElement("a", {target: 'category_' + question.group.category.id, href: 'tests/' + question.group.category.id + '.html#question-' + question.id, className: "teal-text right"}, React.createElement("small", null, "#", question.id)) :
+				React.createElement("a", {target: 'category_' + question.group.category.id, href: 'tests/' + question.group.category.id + '/group-' + question.group.id + '.html#question-' + question.id, className: "teal-text right"}, React.createElement("small", null, "#", question.id)) :
 				'';
 
 			var showAnswers = (this.props.type == 'result') || (selected && this.props.settings.instantCorrection) || this.state.showAnswers;
