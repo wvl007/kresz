@@ -5,7 +5,7 @@
  * - MEDIA_CACHE: Kérdésképek és ikonok - Cache-First, tartósan megmarad kódfrissítéskor is!
  */
 
-var APP_CACHE = 'kresz-app-v10';
+var APP_CACHE = 'kresz-app-v11';
 var MEDIA_CACHE = 'kresz-media-v1';
 
 var CORE_ASSETS = [

@@ -941,12 +941,6 @@ var ga = null;
 				this.loadData();
 			}
 		},
-		handleLoadSample: function() {
-			if (model.loadSampleData) {
-				model.loadSampleData();
-				this.loadData();
-			}
-		},
 		render: function() {
 			var self = this;
 
@@ -954,8 +948,7 @@ var ga = null;
 			var examRows = this.state.exams.length === 0 ?
 				React.createElement("tr", null, 
 					React.createElement("td", {colSpan: 5, className: "grey-text center-align stats-empty-cell", style: {padding: "24px 12px", whiteSpace: "normal"}}, 
-						React.createElement("p", {style: {marginBottom: "14px", fontSize: "14.5px"}}, "Még nem fejeztél be teljes vizsgát. Tölts ki egy tesztet az eredmények megtekintéséhez!"), 
-						React.createElement("button", {className: "waves-effect waves-light btn teal lighten-1", onClick: this.handleLoadSample}, "Minta adatok betöltése (demó)")
+						React.createElement("p", {style: {margin: "8px 0", fontSize: "14.5px"}}, "Még nem fejeztél be teljes vizsgát. Tölts ki egy tesztet az eredmények megtekintéséhez!")
 					)
 				) :
 				$.map(this.state.exams, function(ex, idx) {
@@ -1067,7 +1060,6 @@ var ga = null;
 					React.createElement("div", {className: "stats-header-container"}, 
 						React.createElement("h3", {className: "stats-title"}, "Statisztika és Vizsganapló"), 
 						React.createElement("div", {className: "stats-header-actions"}, 
-							React.createElement("button", {className: "waves-effect waves-light btn teal lighten-1 stats-sample-btn", onClick: this.handleLoadSample, title: "Minta statisztikai adatok és vizsganapló betöltése teszteléshez"}, "Minta adatok"), 
 							React.createElement("button", {className: "waves-effect waves-light btn red lighten-1 stats-reset-btn", onClick: this.handleReset, title: "Minden korábbi eredmény és statisztika törlése"}, "Statisztika törlése")
 						)
 					), 

@@ -860,7 +860,6 @@ ol li {
         gap: 8px;
         width: 100%;
     }
-    .stats-sample-btn,
     .stats-reset-btn {
         width: 100% !important;
         display: block !important;
