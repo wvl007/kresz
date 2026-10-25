@@ -539,11 +539,11 @@ var ga = null;
 						), 
 						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {type: "checkbox", id: "opt-showTime", checked: settings.showTime, onChange: this.toggleSetting.bind(this, 'showTime')}), 
-							React.createElement("label", {htmlFor: "opt-showTime"}, "Időmérés mutatása")
+							React.createElement("label", {htmlFor: "opt-showTime"}, "Időmérés mutatása (stopper)")
 						), 
 						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {type: "checkbox", id: "opt-limitTime", checked: settings.limitTime, onChange: this.toggleSetting.bind(this, 'limitTime')}), 
-							React.createElement("label", {htmlFor: "opt-limitTime"}, "Időkorlát (60 mp / kérdés)")
+							React.createElement("label", {htmlFor: "opt-limitTime"}, "Időkorlát bekapcsolása (60 mp visszaszámláló)")
 						), 
 						React.createElement("p", {className: "option-item"}, 
 							React.createElement("input", {type: "checkbox", id: "opt-showHistory", checked: settings.showHistory, onChange: this.toggleSetting.bind(this, 'showHistory')}), 
@@ -563,16 +563,25 @@ var ga = null;
 					React.createElement("div", {className: "card"}, 
 						React.createElement("div", {className: "card-content"}, 
 							React.createElement("span", {className: "card-title grey-text text-darken-4"}, "Valós KRESZ teszt"), 
-							React.createElement("p", null, "A valós vizsgának megfelelő tesztsor: időméréssel, eredeti kérdésszámmal.")
+							React.createElement("p", null, "Hivatalos hatósági vizsgaszimuláció: fix 55 kérdés minden témakörből, szigorú 60 mp/kérdés időkorláttal, azonnali javítás nélkül (kiértékelés a legvégén).")
 						), 
 						React.createElement("div", {className: "card-action"}, 
-							React.createElement("a", {className: "waves-effect waves-light btn", onClick: this.startRealTest}, "Valós teszt indítása")
+							React.createElement("a", {className: "waves-effect waves-light btn teal lighten-1", onClick: this.startRealTest}, "Hivatalos vizsga indítása")
 
 						)
 					), 
 					React.createElement("div", {className: "card"}, 
 						React.createElement("div", {className: "card-content"}, 
-							React.createElement("span", {className: "card-title grey-text text-darken-4"}, "Témakörök kiválasztása"), 
+							React.createElement("span", {className: "card-title grey-text text-darken-4"}, "Gyakorló teszt beállításai"), 
+							settingsHtml
+						),
+						React.createElement("div", {className: "card-action"}, 
+							React.createElement("a", {className: "waves-effect waves-light btn", onClick: this.startTest}, "Gyakorló teszt indítása a fenti beállításokkal")
+						)
+					),
+					React.createElement("div", {className: "card"}, 
+						React.createElement("div", {className: "card-content"}, 
+							React.createElement("span", {className: "card-title grey-text text-darken-4"}, "Témakörök kiválasztása (szűréshez)"), 
 							groupsHtml
 						), 
 						React.createElement("div", {className: "card-action"}, 
@@ -580,14 +589,10 @@ var ga = null;
 							React.createElement("a", {onClick: this.resetGroupSelection.bind(this, false)}, React.createElement("i", {className: "material-icons clear hide"}, "done_all"), " Kiválasztás törlése"), 
 							React.createElement("a", {onClick: this.selectOnlyThreePointGroups}, React.createElement("i", {className: "material-icons tiny hide"}, "done_all"), " Csak a 3 pontosak kijelölése")
 						)
-					), 
-					React.createElement("div", {className: "card"}, 
-						React.createElement("div", {className: "card-content"}, 
-							React.createElement("span", {className: "card-title grey-text text-darken-4"}, "Beállítások"), 
-							settingsHtml
-						)
-					), 	
-					React.createElement("a", {className: "waves-effect waves-light btn", onClick: this.startTest}, "Teszt indítása")
+					),
+					React.createElement("div", {style: {textAlign: "center", margin: "20px 0"}}, 
+						React.createElement("a", {className: "waves-effect waves-light btn btn-large", onClick: this.startTest}, "Gyakorló teszt indítása a kiválasztott témakörökkel")
+					)
 				)
 			);
 		}
@@ -618,6 +623,9 @@ var ga = null;
 				if (question.selected === null) {
 					question.selectChoice(choiceIndex);
 					this.forceUpdate();
+					if (!this.props.settings.instantCorrection) {
+						this.nextQuestion();
+					}
 				}
 				e.preventDefault();
 				return;
@@ -765,24 +773,40 @@ var ga = null;
 			if (!this.props.question || !this.props.question.group || !this.props.question.group.category) return 0;
 			return this.props.question.group.category.exTimeLimit - this.getElapsedTime();
 		},
-		getTimeState: function(remainingTime) {
-			if (remainingTime > 10) {
+		getTimeState: function(timeVal) {
+			if (!this.props.settings.limitTime) {
 				return 'ok';
-			} else if (remainingTime >= 0) {
+			}
+			if (timeVal > 10) {
+				return 'ok';
+			} else if (timeVal >= 0) {
 				return 'warn';
 			} else {
 				return 'expired';
 			}
 		},
-		updateTime: function(remainingTime) {
-			var sign = remainingTime >= 0 ? '' : '-';
-			var calcRemainingTime = Math.abs(remainingTime);
-			var seconds = calcRemainingTime % 60;
-			var minutes =  (calcRemainingTime - seconds) / 60;
-			var html = '<span class="question-time-val question-time-val-' + this.getTimeState(remainingTime) + '">' + sign + minutes + ':' + (seconds < 10 ? '0' : '') + seconds + '</span>';
-			if (this.refs && this.refs.time) {
-				$(React.findDOMNode(this.refs.time)).html(html);
+		updateTime: function() {
+			if (!this.refs || !this.refs.time) return;
+			var $el = $(React.findDOMNode(this.refs.time));
+			if (!this.props.settings.showTime) {
+				$el.addClass('hide');
+				return;
 			}
+			$el.removeClass('hide');
+
+			var isLimit = !!this.props.settings.limitTime && this.props.type == 'test';
+			var timeVal = isLimit ? this.getRemainingTime() : this.getElapsedTime();
+			var sign = timeVal >= 0 ? '' : '-';
+			var absVal = Math.abs(timeVal);
+			var seconds = absVal % 60;
+			var minutes = (absVal - seconds) / 60;
+			var timeStr = sign + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+			var stateClass = this.getTimeState(timeVal);
+			var label = isLimit ? 'Hátralévő idő' : 'Eltelt idő';
+
+			var html = '<span class="question-time-label" style="font-size:11px;font-weight:600;color:#78909c;display:block;line-height:1.2;">' + label + ':</span><span class="question-time-val question-time-val-' + stateClass + '">' + timeStr + '</span>';
+			$el.attr('title', label + ': ' + timeStr);
+			$el.html(html);
 		},
 		startTimeUpdate: function() {
 			var self = this;
@@ -790,20 +814,28 @@ var ga = null;
 				clearInterval(this.state.timeCallback);
 			}
 
+			if (!this.props.settings.showTime && !this.props.settings.limitTime) {
+				return;
+			}
+
 			this.setState({
 				startTime: (new Date).getTime(),
 				timeCallback: setInterval(function() {
-					var remainingTime = self.getRemainingTime();
-					if (remainingTime < 0 && self.props.settings.limitTime) {
-						self.nextQuestion();
-					} else {
-						self.updateTime(remainingTime);
+					if (self.props.settings.limitTime) {
+						var remainingTime = self.getRemainingTime();
+						if (remainingTime < 0) {
+							self.nextQuestion();
+							return;
+						}
+					}
+					if (self.props.settings.showTime) {
+						self.updateTime();
 					}
 				}, 1000)
 			});
 		},
 		stopTimeUpdate: function() {
-			if (this.state.timeCallback) {
+			if (this.state && this.state.timeCallback) {
 				clearInterval(this.state.timeCallback);
 				if (this.props.question) {
 					this.props.question.elapsedTime = this.getElapsedTime();
@@ -814,18 +846,18 @@ var ga = null;
 			}
 		},
 		componentWillMount: function() {
-			if (this.props.settings.showTime && this.props.type == 'test') {
+			if ((this.props.settings.showTime || this.props.settings.limitTime) && this.props.type == 'test') {
 				this.startTimeUpdate();
 			}
 		},
 		componentWillReceiveProps: function(newProps) {
-			if (newProps.settings.showTime && this.props.type == 'test') {
+			if ((newProps.settings.showTime || newProps.settings.limitTime) && this.props.type == 'test') {
 				this.startTimeUpdate();
 			}
 		},
 		componentDidMount: function() {
 			if (this.props.settings.showTime) {
-				this.updateTime(this.getRemainingTime());
+				this.updateTime();
 			}
 		},
 		componentWillUnmount: function() {
@@ -833,7 +865,7 @@ var ga = null;
 		},
 		componentDidUpdate: function() {
 			if (this.props.settings.showTime) {
-				this.updateTime(this.getRemainingTime())
+				this.updateTime();
 			}
 		},
 		nextQuestion: function() {
