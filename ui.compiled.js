@@ -613,7 +613,7 @@ var ga = null;
 			}
 		},
 		handleKeyDown: function(e) {
-			if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+			if (e.target && (e.target.tagName === 'TEXTAREA' || (e.target.tagName === 'INPUT' && e.target.type !== 'radio' && e.target.type !== 'checkbox'))) {
 				return;
 			}
 			var key = e.key;
@@ -631,7 +631,7 @@ var ga = null;
 			else if (key === '5' || key === 'e' || key === 'E') choiceIndex = 4;
 
 			if (choiceIndex !== -1 && choiceIndex < question.choices.length) {
-				if (!isChecked || !isInstant) {
+				if (!isChecked) {
 					question.selectChoice(choiceIndex);
 					this.forceUpdate();
 				}
@@ -707,6 +707,7 @@ var ga = null;
 
 			var questionHtml = !this.props.settings.onepage ?
 				(React.createElement(Question, {
+					key: question.id,
 					question: question, 
 					settings: this.props.settings, 
 					nextQuestionCallback: this.nextQuestion, 
@@ -831,7 +832,7 @@ var ga = null;
 		},
 		getElapsedTime: function() {
 			if (!this.props.question) return 0;
-			return this.props.type == 'test' ? Math.round(((new Date).getTime() - this.state.startTime + this.props.question.elapsedTime) / 1000) : this.props.question.elapsedTime;
+			return this.props.type == 'test' ? (Math.round(((new Date).getTime() - this.state.startTime) / 1000) + (this.props.question.elapsedTime || 0)) : this.props.question.elapsedTime;
 		},
 		getRemainingTime: function() {
 			if (!this.props.question || !this.props.question.group || !this.props.question.group.category) return 0;
@@ -888,6 +889,7 @@ var ga = null;
 					if (self.props.settings.limitTime) {
 						var remainingTime = self.getRemainingTime();
 						if (remainingTime < 0) {
+							self.stopTimeUpdate();
 							self.nextQuestion();
 							return;
 						}
@@ -913,8 +915,11 @@ var ga = null;
 			}
 		},
 		componentWillReceiveProps: function(newProps) {
-			if ((newProps.settings.showTime || newProps.settings.limitTime) && this.props.type == 'test') {
-				this.startTimeUpdate();
+			if (newProps.question && this.props.question && newProps.question.id !== this.props.question.id) {
+				this.stopTimeUpdate();
+				if ((newProps.settings.showTime || newProps.settings.limitTime) && newProps.type == 'test') {
+					this.startTimeUpdate();
+				}
 			}
 		},
 		componentDidMount: function() {

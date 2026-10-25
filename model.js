@@ -87,6 +87,7 @@ var model = (function() {
 		}
 	};
 	Question.prototype.selectChoice = function(i) {
+		if (this.committed) return;
 		this.selected = i;
 	};
 	Question.prototype.commitChoice = function() {
@@ -103,7 +104,7 @@ var model = (function() {
 		}
 	};
 	Question.prototype.isCorrect = function() {
-		return this.selected == this.correct;
+		return this.selected !== null && this.selected == this.correct;
 	}
 
 	function Test(questions, category) {
