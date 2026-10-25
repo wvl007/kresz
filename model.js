@@ -59,6 +59,7 @@ var model = (function() {
 
 		this.selected = null;
 		this.elapsedTime = 0;
+		this.committed = false;
 	}
 	Question.prototype.getMissedCount = function() {
 		return (this.id in history) ? history[this.id].missed : 0;
@@ -87,14 +88,19 @@ var model = (function() {
 	};
 	Question.prototype.selectChoice = function(i) {
 		this.selected = i;
-
-		ensureQuestionInHistory(this);
-		if (this.selected == this.correct) {
-			history[this.id].correct++;
-		} else {
-			history[this.id].missed++;
+	};
+	Question.prototype.commitChoice = function() {
+		if (this.committed) return;
+		this.committed = true;
+		if (this.selected !== null) {
+			ensureQuestionInHistory(this);
+			if (this.selected == this.correct) {
+				history[this.id].correct++;
+			} else {
+				history[this.id].missed++;
+			}
+			saveHistory();
 		}
-		saveHistory();
 	};
 	Question.prototype.isCorrect = function() {
 		return this.selected == this.correct;

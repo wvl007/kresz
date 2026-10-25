@@ -605,12 +605,23 @@ var ga = null;
 				startTime: new Date()
 			};
 		},
+		checkAnswer: function() {
+			var question = (this.props.test && this.props.test.questions) ? this.props.test.questions[this.state.qNum] : null;
+			if (question && question.selected !== null) {
+				question.commitChoice();
+				this.forceUpdate();
+			}
+		},
 		handleKeyDown: function(e) {
 			if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
 				return;
 			}
 			var key = e.key;
 			var question = (this.props.test && this.props.test.questions) ? this.props.test.questions[this.state.qNum] : null;
+			if (!question) return;
+
+			var isChecked = !!question.committed;
+			var isInstant = !!this.props.settings.instantCorrection;
 
 			var choiceIndex = -1;
 			if (key === '1' || key === 'a' || key === 'A') choiceIndex = 0;
@@ -619,13 +630,10 @@ var ga = null;
 			else if (key === '4' || key === 'd' || key === 'D') choiceIndex = 3;
 			else if (key === '5' || key === 'e' || key === 'E') choiceIndex = 4;
 
-			if (choiceIndex !== -1 && question && choiceIndex < question.choices.length) {
-				if (question.selected === null) {
+			if (choiceIndex !== -1 && choiceIndex < question.choices.length) {
+				if (!isChecked || !isInstant) {
 					question.selectChoice(choiceIndex);
 					this.forceUpdate();
-					if (!this.props.settings.instantCorrection) {
-						this.nextQuestion();
-					}
 				}
 				e.preventDefault();
 				return;
@@ -633,15 +641,17 @@ var ga = null;
 
 			if (key === ' ' || key === 'Enter') {
 				e.preventDefault();
-				this.nextQuestion();
+				if (isInstant && !isChecked && question.selected !== null) {
+					this.checkAnswer();
+				} else {
+					this.nextQuestion();
+				}
 				return;
 			}
 
 			if (key === 's' || key === 'S' || key === '*') {
-				if (question) {
-					question.setMarked(!question.isMarked());
-					this.forceUpdate();
-				}
+				question.setMarked(!question.isMarked());
+				this.forceUpdate();
 				e.preventDefault();
 				return;
 			}
@@ -653,6 +663,11 @@ var ga = null;
 			window.removeEventListener('keydown', this.handleKeyDown);
 		},
 		nextQuestion: function() {
+			var currentQuestion = this.props.test && this.props.test.questions ? this.props.test.questions[this.state.qNum] : null;
+			if (currentQuestion) {
+				currentQuestion.commitChoice();
+			}
+
 			if (!this.props.test || this.state.qNum + 1 >= this.props.test.getQuestionCount()) {
 				return this.finishTest();
 			}
@@ -662,6 +677,11 @@ var ga = null;
 			if (ga) { ga('send', 'event', 'test', 'next-question', this.props.category.id); }
 		},
 		finishTest: function() {
+			if (this.props.test && this.props.test.questions) {
+				$.each(this.props.test.questions, function(i, q) {
+					q.commitChoice();
+				});
+			}
 			if (model.recordExamResult && this.props.test) {
 				model.recordExamResult(this.props.test);
 			}
@@ -681,21 +701,59 @@ var ga = null;
 				);
 			}
 			var question = this.props.test.questions[this.state.qNum];
+			var isChecked = !!question.committed;
+			var isInstant = !!this.props.settings.instantCorrection;
+			var isLastQuestion = this.state.qNum + 1 >= this.props.test.getQuestionCount();
 
 			var questionHtml = !this.props.settings.onepage ?
-				(React.createElement(Question, {question: question, settings: this.props.settings, nextQuestionCallback: this.nextQuestion, type: "test"})) :
-				$.map(this.props.test.questions, function(question) {
-					return React.createElement(Question, {question: question, settings: self.props.settings, nextQuestionCallback: $.noop, type: "test", key: question.id})
+				(React.createElement(Question, {
+					question: question, 
+					settings: this.props.settings, 
+					nextQuestionCallback: this.nextQuestion, 
+					onChoiceSelected: function() { self.forceUpdate(); },
+					type: "test"
+				})) :
+				$.map(this.props.test.questions, function(q) {
+					return React.createElement(Question, {
+						question: q, 
+						settings: self.props.settings, 
+						nextQuestionCallback: $.noop, 
+						onChoiceSelected: function() { self.forceUpdate(); },
+						type: "test", 
+						key: q.id
+					});
 				});
+
+			var primaryActionBtn = null;
+			if (isInstant && !isChecked) {
+				if (question.selected === null) {
+					primaryActionBtn = React.createElement("a", {
+						className: "waves-effect waves-light btn teal lighten-2", 
+						onClick: this.nextQuestion,
+						title: "Kérdés átugrása válasz nélkül (Szóköz)"
+					}, "Kérdés kihagyása / Passz");
+				} else {
+					primaryActionBtn = React.createElement("a", {
+						className: "waves-effect waves-light btn teal darken-1", 
+						onClick: this.checkAnswer,
+						title: "Válasz ellenőrzése (Szóköz)"
+					}, "Válasz ellenőrzése");
+				}
+			} else {
+				primaryActionBtn = React.createElement("a", {
+					className: "waves-effect waves-light btn teal", 
+					onClick: this.nextQuestion,
+					title: isLastQuestion ? "Teszt befejezése" : "Következő kérdés (Szóköz)"
+				}, isLastQuestion ? "Teszt befejezése" : "Következő kérdés (Szóköz)");
+			}
 
 			var buttonsHtml = this.props.settings.onepage ?
 				React.createElement("a", {className: "waves-effect waves-light btn", title: "Mutasd az eredményt!", onClick: this.finishTest}, "Teszt befejezése") :
 				React.createElement("div", {className: "row test-controls-row"}, 
-					React.createElement("div", {className: "col m4 s12"}, React.createElement("a", {className: "waves-effect waves-light btn", onClick: this.nextQuestion}, "Következő kérdés (Szóköz)")), 
+					React.createElement("div", {className: "col m4 s12"}, primaryActionBtn), 
 					React.createElement("div", {className: "test-progress-question-count col m4 s12"}, this.state.qNum + 1, " / ", this.props.test.getQuestionCount()), 
 					React.createElement("div", {className: "col m4 s12"}, React.createElement("a", {className: "waves-effect waves-teal btn-flat right", title: "Mutasd az eredményt!", onClick: this.finishTest}, "Teszt befejezése"))
-				)
-				;
+				);
 
 			return (
 				React.createElement("div", null, 
@@ -749,17 +807,23 @@ var ga = null;
 			};
 		},
 		selectChoice: function(event) {
-			if (this.props.question.selected === null && this.props.type == 'test') {
-				this.props.question.selectChoice(parseInt(event.target.value));
+			var question = this.props.question;
+			if (!question || this.props.type !== 'test') return;
 
-				if (this.props.settings.instantCorrection) {
-					this.stopTimeUpdate();
-				}
+			var isChecked = !!question.committed;
+			var isInstant = !!this.props.settings.instantCorrection;
 
-				this.forceUpdate();
+			if (isInstant && isChecked) return;
 
-				if (ga) { ga('send', 'event', 'test', 'answer-question', this.props.question.group.category.id); }
+			var val = parseInt(event.target.value);
+			question.selectChoice(val);
+			this.forceUpdate();
+
+			if (this.props.onChoiceSelected) {
+				this.props.onChoiceSelected(val);
 			}
+
+			if (ga) { ga('send', 'event', 'test', 'select-choice', question.group.category.id); }
 		},
 		toggleMark: function() {
 			this.props.question.setMarked(!this.props.question.isMarked());
@@ -878,12 +942,37 @@ var ga = null;
 				return React.createElement("div", null);
 			}
 
+			var isChecked = !!question.committed;
+			var isInstant = !!this.props.settings.instantCorrection;
+			var isLocked = (this.props.type === 'result') || (isInstant && isChecked);
+			var showAnswers = (this.props.type === 'result') || (isInstant && isChecked) || this.state.showAnswers;
 			var selected = question.selected !== null;
+
+			if (isLocked) {
+				this.stopTimeUpdate();
+			}
+
 			var choicesHtml = $.map(question.choices, function(choice, i) {
 				var id = 'question-answer-' + self.props.question.id + '-' + i;
+				var choiceClass = '';
+				if (showAnswers) {
+					if (question.correct == i) {
+						choiceClass = 'choice-right';
+					} else if (question.selected == i) {
+						choiceClass = 'choice-wrong';
+					}
+				}
 				return (
-					React.createElement("p", {key: i, className: question.correct == i ? 'choice-right' : 'choice-wrong'}, 
-						React.createElement("input", {type: "radio", checked: question.selected === i, value: i, id: id, readOnly: selected, onChange: self.selectChoice}), 
+					React.createElement("p", {key: i, className: choiceClass}, 
+						React.createElement("input", {
+							type: "radio", 
+							name: 'question-choice-' + self.props.question.id,
+							checked: question.selected === i, 
+							value: i, 
+							id: id, 
+							disabled: isLocked, 
+							onChange: self.selectChoice
+						}), 
 						React.createElement("label", {htmlFor: id}, React.createElement("span", {className: "badge-key"}, (i + 1)), choice)
 					)
 				);
@@ -899,9 +988,8 @@ var ga = null;
 				React.createElement("a", {target: 'category_' + question.group.category.id, href: 'tests/' + question.group.category.id + '/group-' + question.group.id + '.html#question-' + question.id, className: "teal-text right"}, React.createElement("small", null, "#", question.id)) :
 				'';
 
-			var showAnswers = (this.props.type == 'result') || (selected && this.props.settings.instantCorrection) || this.state.showAnswers;
 			return (
-				React.createElement("div", {className: 'card ' + (showAnswers ? ' show-answers' : '') + (selected ? ' decided' : ' undecided') + (showAnswers && selected ? (this.props.question.isCorrect() ? ' question-right green lighten-5' : ' question-wrong red lighten-5') : '')}, 
+				React.createElement("div", {className: 'card ' + (showAnswers ? ' show-answers' : '') + (selected ? ' decided' : ' undecided') + (showAnswers && selected ? (this.props.question.isCorrect() ? ' question-right green lighten-5' : ' question-wrong red lighten-5') : '')},
 					React.createElement("div", {className: "card-content question-content"}, 
 						imageHtml, 
 						React.createElement("div", {className: "question-main"}, 
