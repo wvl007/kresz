@@ -901,11 +901,9 @@ var ga = null;
 		stopTimeUpdate: function() {
 			if (this.state && this.state.timeCallback) {
 				clearInterval(this.state.timeCallback);
+				this.state.timeCallback = null;
 				if (this.props.question) {
 					this.props.question.elapsedTime = this.getElapsedTime();
-				}
-				if (this.isMounted()) {
-					this.setState({timeCallback: null});
 				}
 			}
 		},
@@ -928,7 +926,14 @@ var ga = null;
 			this.stopTimeUpdate();
 		},
 		componentDidUpdate: function() {
-			if (this.props.settings.showTime) {
+			var question = this.props.question;
+			var isChecked = !!(question && question.committed);
+			var isInstant = !!this.props.settings.instantCorrection;
+			var isLocked = (this.props.type === 'result') || (isInstant && isChecked);
+
+			if (isLocked) {
+				this.stopTimeUpdate();
+			} else if (this.props.settings.showTime) {
 				this.updateTime();
 			}
 		},
@@ -948,9 +953,6 @@ var ga = null;
 			var showAnswers = (this.props.type === 'result') || (isInstant && isChecked) || this.state.showAnswers;
 			var selected = question.selected !== null;
 
-			if (isLocked) {
-				this.stopTimeUpdate();
-			}
 
 			var choicesHtml = $.map(question.choices, function(choice, i) {
 				var id = 'question-answer-' + self.props.question.id + '-' + i;
