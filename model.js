@@ -225,6 +225,25 @@ var model = (function() {
 				});
 			}
 		},
+		getCategoryQuestions: function(categoryId) {
+			return this.getCategory(categoryId).then(function(category) {
+				var list = [];
+				if (category && category.groups) {
+					$.each(category.groups, function(gi, group) {
+						group.category = category;
+						if (group.questions) {
+							$.each(group.questions, function(qi, qId) {
+								var raw = category.questions ? category.questions[qId] : null;
+								if (raw) {
+									list.push(new Question(raw, group));
+								}
+							});
+						}
+					});
+				}
+				return list;
+			});
+		},
 		getCategories: function() {
 			// Return list of categories
 			return cachedData.categoryIndex;

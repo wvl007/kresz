@@ -145,11 +145,13 @@ var ga = null;
 						React.createElement("div", {className: "nav-wrapper container"}, React.createElement("a", {id: "logo-container", href: "#", className: "brand-logo"}, "KRESZ teszt"), 
 							React.createElement("ul", {className: "right hide-on-med-and-down"}, 
 								React.createElement("li", null, React.createElement("a", {href: "#"}, "Új teszt")), 
+								React.createElement("li", null, React.createElement("a", {href: "#search"}, "Kereső")), 
 								React.createElement("li", null, React.createElement("a", {href: "#info"}, "Infó")), 
 								React.createElement("li", null, React.createElement("a", {href: "#statistics"}, "Statisztika"))
 							), 
 							React.createElement("ul", {id: "nav-mobile", className: "side-nav"}, 
 								React.createElement("li", null, React.createElement("a", {href: "#"}, "Új teszt")), 
+								React.createElement("li", null, React.createElement("a", {href: "#search"}, "Kereső")), 
 								React.createElement("li", null, React.createElement("a", {href: "#info"}, "Infó")), 
 								React.createElement("li", null, React.createElement("a", {href: "#statistics"}, "Statisztika"))
 							), 
@@ -181,6 +183,12 @@ var ga = null;
 			}.bind(this));
 			router.addRoute('statistics', function() {
 				this.slidePage(React.createElement(Statistics, {key: "stats"}));
+			}.bind(this));
+			router.addRoute('search', function() {
+				this.slidePage(React.createElement(SearchPage, {key: "search"}));
+			}.bind(this));
+			router.addRoute('search/:categoryId', function(categoryId) {
+				this.slidePage(React.createElement(SearchPage, {key: "search-" + categoryId, categoryId: categoryId}));
 			}.bind(this));
 			
 			router.start();
@@ -225,6 +233,21 @@ var ga = null;
 								React.createElement("br", null), React.createElement("br", null), 
 								"E-mail: ujkreszteszt (a) gmail.com"
 							)
+						)
+					), 
+
+					React.createElement("div", {className: "card teal lighten-5", style: {border: "1px solid #b2dfdb"}}, 
+						React.createElement("div", {className: "card-content"}, 
+							React.createElement("span", {className: "card-title teal-text text-darken-3", style: {fontSize: "1.25rem", fontWeight: "600", display: "flex", alignItems: "center", gap: "8px"}}, 
+								React.createElement("svg", {viewBox: "0 0 24 24", width: "24", height: "24", style: {fill: "#00796b", flexShrink: 0}}, 
+									React.createElement("path", {d: "M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"})
+								), 
+								"Kérdések élő keresése"
+							), 
+							React.createElement("p", {style: {margin: "8px 0 14px", color: "#37474f"}}, 
+								"Keress rá bármilyen kifejezésre (pl. „villamos”, „hólánc”, „elsőbbség”) vagy kérdéskódra a teljes hivatalos kérdésbankban a helyes válaszokkal együtt."
+							), 
+							React.createElement("a", {href: "#search", className: "btn waves-effect waves-light teal"}, "Kereső megnyitása")
 						)
 					), 
 
@@ -1198,3 +1221,365 @@ var ga = null;
 	});
 
 	// http://coenraets.org/blog/2014/12/animated-page-transitions-with-react-js/
+
+
+	var SearchQuestionCard = React.createClass({displayName: 'SearchQuestionCard',
+		toggleMark: function(e) {
+			if (e) e.preventDefault();
+			var q = this.props.question;
+			q.setMarked(!q.isMarked());
+			this.forceUpdate();
+			if (this.props.onToggleMark) {
+				this.props.onToggleMark(q);
+			}
+		},
+		render: function() {
+			var question = this.props.question;
+			var self = this;
+
+			var choicesHtml = $.map(question.choices, function(choice, i) {
+				var isCorrect = (question.correct === i);
+				return (
+					React.createElement("div", {
+						key: i, 
+						className: "search-choice-item " + (isCorrect ? "search-choice-correct green lighten-5" : ""),
+						style: {
+							padding: "9px 12px",
+							margin: "5px 0",
+							borderRadius: "6px",
+							border: isCorrect ? "1.5px solid #2e7d32" : "1px solid #e0e0e0",
+							display: "flex",
+							alignItems: "flex-start",
+							gap: "10px",
+							fontWeight: isCorrect ? "600" : "normal",
+							color: isCorrect ? "#1b5e20" : "#37474f",
+							background: isCorrect ? "#e8f5e9" : "#ffffff"
+						}
+					}, 
+						React.createElement("span", {
+							style: {
+								display: "inline-flex",
+								alignItems: "center",
+								justifyContent: "center",
+								width: "22px",
+								height: "22px",
+								borderRadius: "50%",
+								background: isCorrect ? "#2e7d32" : "#eceff1",
+								color: isCorrect ? "#ffffff" : "#607d8b",
+								fontSize: "12px",
+								fontWeight: "bold",
+								flexShrink: 0
+							}
+						}, isCorrect ? "✓" : (i + 1)), 
+						React.createElement("span", {style: {flex: "1 1 auto"}}, choice)
+					)
+				);
+			});
+
+			var imageHtml = (question.assets && question.assets.length > 0) ?
+				$.map(question.assets, function(asset, i) {
+					return React.createElement("img", {
+						className: "question-image search-card-image", 
+						src: 'data/asset/' + asset, 
+						key: i,
+						alt: "KRESZ kérdés ábra"
+					});
+				}) : null;
+
+			var questionLinkHtml = question.group && question.group.category ?
+				React.createElement("a", {
+					target: '_blank', 
+					href: 'tests/' + question.group.category.id + '/group-' + question.group.id + '.html#question-' + question.id, 
+					className: "teal-text text-darken-2",
+					rel: "noopener noreferrer",
+					title: "Megnyitás a témakör külön oldalán"
+				}, React.createElement("small", null, "#", question.id)) :
+				React.createElement("small", {className: "grey-text"}, "#", question.id);
+
+			var marked = question.isMarked();
+			var scoreStats = (question.getCorrectCount() > 0 || question.getMissedCount() > 0) ?
+				React.createElement("span", {style: {fontSize: "12px", marginRight: "10px", color: "#546e7a"}},
+					React.createElement("span", {className: "green-text text-darken-3", title: "Helyes válaszok"}, question.getCorrectCount()), " – ",
+					React.createElement("span", {className: "red-text text-darken-3", title: "Hibás válaszok"}, question.getMissedCount())
+				) : null;
+
+			return (
+				React.createElement("div", {className: "card search-result-card", key: question.id, style: {marginBottom: "16px"}}, 
+					React.createElement("div", {className: "card-content", style: {padding: "16px 20px 14px 20px"}}, 
+						React.createElement("div", {style: {display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "8px"}}, 
+							React.createElement("span", {
+								className: "chip", 
+								style: {margin: 0, height: "26px", lineHeight: "26px", fontSize: "12px", background: "#e0f2f1", color: "#004d40"}
+							}, 
+								React.createElement("strong", null, "Témakör: "), " ", 
+								(question.group ? question.group.title : "")
+							), 
+							React.createElement("div", {style: {display: "flex", alignItems: "center"}}, 
+								scoreStats,
+								questionLinkHtml, 
+								React.createElement("a", {
+									className: "btn-floating btn-small waves-effect waves-light " + (marked ? "amber lighten-1" : "grey lighten-2"), 
+									onClick: this.toggleMark, 
+									title: marked ? "Megjelölés törlése" : "Kérdés megjelölése gyakorláshoz", 
+									style: {width: "30px", height: "30px", lineHeight: "30px", marginLeft: "10px", display: "inline-flex", alignItems: "center", justifyContent: "center"}
+								}, 
+									React.createElement("svg", {viewBox: "0 0 24 24", width: "16", height: "16", style: {fill: marked ? "#ffffff" : "#78909c"}}, 
+										React.createElement("path", {d: "M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"})
+									)
+								)
+							)
+						), 
+						React.createElement("div", {className: "question-content", style: {padding: "4px 0 0 0"}}, 
+							imageHtml, 
+							React.createElement("div", {className: "question-main"}, 
+								React.createElement("p", {className: "question-text", style: {fontSize: "1.05rem", fontWeight: "600", marginBottom: "12px"}}, 
+									question.question
+								), 
+								choicesHtml
+							)
+						)
+					)
+				)
+			);
+		}
+	});
+
+	var SearchPage = React.createClass({displayName: 'SearchPage',
+		getInitialState: function() {
+			return {
+				categoryId: this.props.categoryId || '166852',
+				categories: model.getCategories() || [],
+				query: '',
+				filterType: 'all', // 'all', 'marked', 'missed'
+				loading: true,
+				questions: [],
+				limit: 30
+			};
+		},
+		componentDidMount: function() {
+			var self = this;
+			model.loaded.done(function() {
+				if (!self.isMounted()) return;
+				var cats = model.getCategories();
+				var catId = self.state.categoryId;
+				if (!catId && cats.length > 0) catId = cats[0].id;
+				self.setState({categories: cats, categoryId: catId});
+				self.loadCategoryQuestions(catId);
+			});
+		},
+		loadCategoryQuestions: function(catId) {
+			var self = this;
+			this.setState({loading: true});
+			model.getCategoryQuestions(catId).done(function(questions) {
+				if (self.isMounted()) {
+					self.setState({
+						loading: false,
+						questions: questions,
+						categoryId: catId,
+						limit: 30
+					});
+				}
+			}).fail(function() {
+				if (self.isMounted()) {
+					self.setState({loading: false});
+				}
+			});
+		},
+		handleCategoryChange: function(e) {
+			var newCatId = e.target.value;
+			this.setState({query: '', filterType: 'all', limit: 30});
+			this.loadCategoryQuestions(newCatId);
+		},
+		handleQueryChange: function(e) {
+			this.setState({
+				query: e.target.value,
+				filterType: 'all',
+				limit: 30
+			});
+		},
+		clearQuery: function() {
+			this.setState({query: '', filterType: 'all', limit: 30});
+			if (this.refs.searchInput) {
+				React.findDOMNode(this.refs.searchInput).focus();
+			}
+		},
+		applyChip: function(text) {
+			this.setState({
+				query: text,
+				filterType: 'all',
+				limit: 30
+			});
+			if (this.refs.searchInput) {
+				React.findDOMNode(this.refs.searchInput).focus();
+			}
+		},
+		setFilterType: function(type) {
+			var newType = (this.state.filterType === type) ? 'all' : type;
+			this.setState({
+				filterType: newType,
+				limit: 30
+			});
+		},
+		loadMore: function() {
+			this.setState({limit: this.state.limit + 30});
+		},
+		getFilteredQuestions: function() {
+			var query = this.state.query;
+			var filterType = this.state.filterType;
+			var list = this.state.questions;
+
+			if (filterType === 'marked') {
+				list = list.filter(function(q) { return q.isMarked(); });
+			} else if (filterType === 'missed') {
+				list = list.filter(function(q) { return q.getMissedCount() > 0; });
+			}
+
+			var trimmed = query.trim();
+			if (!trimmed) {
+				return list;
+			}
+
+			var norm = function(s) {
+				return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+			};
+
+			var terms = trimmed.split(/\s+/).filter(Boolean).map(norm);
+
+			return list.filter(function(q) {
+				var idStr = String(q.id);
+				if (!q._searchable) {
+					q._searchable = norm(q.question + ' ' + (q.choices ? q.choices.join(' ') : '') + ' ' + (q.group ? q.group.title : ''));
+				}
+				return terms.every(function(t) {
+					return idStr.indexOf(t) !== -1 || q._searchable.indexOf(t) !== -1;
+				});
+			});
+		},
+		render: function() {
+			var self = this;
+			if (this.state.loading) {
+				return React.createElement(Loading, null);
+			}
+
+			var filtered = this.getFilteredQuestions();
+			var visibleMatches = filtered.slice(0, this.state.limit);
+			var hasMore = filtered.length > this.state.limit;
+			var trimmed = this.state.query.trim();
+
+			// Marked / Missed stats counts
+			var markedCount = 0;
+			var missedCount = 0;
+			this.state.questions.forEach(function(q) {
+				if (q.isMarked()) markedCount++;
+				if (q.getMissedCount() > 0) missedCount++;
+			});
+
+			var categoryOptions = $.map(this.state.categories, function(cat) {
+				return React.createElement("option", {value: cat.id, key: cat.id}, cat.title);
+			});
+
+			var statsBanner = null;
+			if (trimmed || this.state.filterType !== 'all') {
+				if (filtered.length > 0) {
+					statsBanner = React.createElement("div", {className: "search-stats-banner found"}, 
+						React.createElement("span", null, 
+							"Találatok száma: ", React.createElement("strong", null, filtered.length + " db"), " kérdés ", 
+							(trimmed ? React.createElement("span", null, " a(z) ", React.createElement("em", null, "„" + trimmed + "”"), " kifejezésre") : "")
+						), 
+						React.createElement("span", {className: "grey-text text-darken-2"}, "Mutatva: 1 – " + visibleMatches.length)
+					);
+				} else {
+					statsBanner = React.createElement("div", {className: "search-stats-banner empty"}, 
+						React.createElement("span", null, "Nincs találat ", (trimmed ? React.createElement("span", null, " a(z) ", React.createElement("em", null, "„" + trimmed + "”"), " kifejezésre.") : "a kiválasztott szűrésre."))
+					);
+				}
+			} else {
+				statsBanner = React.createElement("div", {className: "search-stats-banner found"}, 
+					React.createElement("span", null, "Böngészés a teljes kérdésbankban: összesen ", React.createElement("strong", null, this.state.questions.length + " db"), " kérdés elérhető."), 
+					React.createElement("span", {className: "grey-text text-darken-2"}, "Mutatva: 1 – " + visibleMatches.length)
+				);
+			}
+
+			var cardsHtml = $.map(visibleMatches, function(q) {
+				return React.createElement(SearchQuestionCard, {
+					key: q.id, 
+					question: q,
+					onToggleMark: function() { self.forceUpdate(); }
+				});
+			});
+
+			var loadMoreBtn = hasMore ?
+				React.createElement("div", {style: {textAlign: "center", margin: "24px 0"}}, 
+					React.createElement("button", {
+						className: "btn waves-effect waves-light teal lighten-1", 
+						onClick: this.loadMore,
+						style: {padding: "0 28px", height: "42px", lineHeight: "42px"}
+					}, 
+						"További 30 találat betöltése (még " + (filtered.length - visibleMatches.length) + " db)"
+					)
+				) : null;
+
+			return (
+				React.createElement("div", {className: "search-page-container"}, 
+					React.createElement("div", {className: "search-header-card"}, 
+						React.createElement("div", {className: "search-category-select-wrapper"}, 
+							React.createElement("label", {style: {fontSize: "14px", fontWeight: "600", color: "#37474f"}}, "Kategória:"), 
+							React.createElement("select", {
+								className: "search-category-select browser-default", 
+								value: this.state.categoryId, 
+								onChange: this.handleCategoryChange
+							}, categoryOptions)
+						), 
+						React.createElement("div", {className: "search-input-container"}, 
+							React.createElement("span", {className: "search-input-icon"}, 
+								React.createElement("svg", {viewBox: "0 0 24 24", width: "20", height: "20"}, 
+									React.createElement("path", {d: "M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"})
+								)
+							), 
+							React.createElement("input", {
+								ref: "searchInput", 
+								type: "text", 
+								className: "search-main-input", 
+								placeholder: "Élő keresés kérdésre, szóra vagy kódra (pl. villamos, hólánc, 703366)...", 
+								value: this.state.query, 
+								onChange: this.handleQueryChange, 
+								autoComplete: "off"
+							}), 
+							(this.state.query ? 
+								React.createElement("button", {
+									type: "button", 
+									className: "search-input-clear", 
+									onClick: this.clearQuery, 
+									title: "Keresés törlése"
+								}, "✕") : null
+							)
+						), 
+						React.createElement("div", {className: "search-quick-tags"}, 
+							React.createElement("span", {className: "search-quick-label"}, "Gyors szűrés:"), 
+							(markedCount > 0 ? 
+								React.createElement("span", {
+									className: "search-tag-chip " + (this.state.filterType === 'marked' ? 'active' : ''), 
+									onClick: function() { self.setFilterType('marked'); }
+								}, "⭐ Megjelölt (" + markedCount + ")") : null
+							), 
+							(missedCount > 0 ? 
+								React.createElement("span", {
+									className: "search-tag-chip " + (this.state.filterType === 'missed' ? 'active' : ''), 
+									onClick: function() { self.setFilterType('missed'); }
+								}, "❌ Rontott (" + missedCount + ")") : null
+							), 
+							React.createElement("span", {className: "search-tag-chip", onClick: function() { self.applyChip('villamos'); }}, "Villamos"), 
+							React.createElement("span", {className: "search-tag-chip", onClick: function() { self.applyChip('hólánc'); }}, "Hólánc"), 
+							React.createElement("span", {className: "search-tag-chip", onClick: function() { self.applyChip('elsőbbség'); }}, "Elsőbbség"), 
+							React.createElement("span", {className: "search-tag-chip", onClick: function() { self.applyChip('fék'); }}, "Fékberendezés"), 
+							React.createElement("span", {className: "search-tag-chip", onClick: function() { self.applyChip('vasúti'); }}, "Vasúti átjáró"), 
+							React.createElement("span", {className: "search-tag-chip", onClick: function() { self.applyChip('sebesség'); }}, "Sebesség")
+						)
+					), 
+					statsBanner, 
+					cardsHtml, 
+					loadMoreBtn
+				)
+			);
+		}
+	});

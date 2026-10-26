@@ -902,3 +902,209 @@ ol li {
         line-height: 1.55;
     }
 }
+
+
+/* ========================================================
+   KERESŐ NÉZET STÍLUSAI
+   ======================================================== */
+.search-header-card {
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.search-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.search-input-icon {
+    position: absolute;
+    left: 14px;
+    pointer-events: none;
+    fill: #00796b;
+    display: flex;
+    align-items: center;
+    z-index: 2;
+}
+
+.search-main-input {
+    width: 100% !important;
+    height: 48px !important;
+    padding: 8px 44px 8px 46px !important;
+    font-size: 16px !important;
+    border: 2px solid #b2dfdb !important;
+    border-radius: 8px !important;
+    background: #fbfdfd !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    transition: all 0.2s ease;
+}
+
+.search-main-input:focus {
+    border-color: #00897b !important;
+    box-shadow: 0 0 0 3px rgba(0, 137, 123, 0.2) !important;
+    background: #ffffff !important;
+}
+
+.search-input-clear {
+    position: absolute;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #eceff1;
+    color: #546e7a;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background 0.15s;
+    z-index: 2;
+}
+
+.search-input-clear:hover {
+    background: #cfd8dc;
+    color: #263238;
+}
+
+.search-quick-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+    align-items: center;
+}
+
+.search-quick-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #546e7a;
+    margin-right: 4px;
+}
+
+.search-tag-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 16px;
+    background: #e0f2f1;
+    color: #00695c;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid #b2dfdb;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.search-tag-chip:hover {
+    background: #b2dfdb;
+    color: #004d40;
+}
+
+.search-tag-chip.active {
+    background: #00796b;
+    color: #ffffff;
+    border-color: #004d40;
+}
+
+.search-category-select-wrapper {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.search-category-select {
+    display: block !important;
+    height: 38px;
+    border: 1px solid #cfd8dc;
+    border-radius: 6px;
+    padding: 4px 12px;
+    background: #ffffff;
+    color: #37474f;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    min-width: 220px;
+}
+
+.search-stats-banner {
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14.5px;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.search-stats-banner.found {
+    background: #e0f2f1;
+    color: #004d40;
+    border-left: 4px solid #00897b;
+}
+
+.search-stats-banner.empty {
+    background: #ffebee;
+    color: #c62828;
+    border-left: 4px solid #ef5350;
+}
+
+.search-result-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    background: #ffffff;
+    transition: box-shadow 0.2s ease;
+}
+
+.search-result-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.search-card-image {
+    max-width: 280px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+@media (max-width: 768px) {
+    .search-header-card {
+        padding: 14px 12px;
+    }
+    .search-category-select {
+        width: 100%;
+        min-width: 100%;
+    }
+    .search-main-input {
+        font-size: 16px !important; /* iOS Safari auto-zoom megelőzése */
+        height: 44px !important;
+    }
+    .search-quick-tags {
+        gap: 6px;
+    }
+    .search-tag-chip {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+    .search-card-image {
+        max-width: 100%;
+        width: 100%;
+        margin-bottom: 12px;
+    }
+}
